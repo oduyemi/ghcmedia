@@ -21,28 +21,14 @@ export const metadata: Metadata = {
 
 export default function AssessmentGuidelines() {
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-[#F7F9FC] text-[#0C2340]">
-      {/* Background atmosphere */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      >
-        <div className="absolute -right-40 -top-40 h-[30rem] w-[30rem] rounded-full bg-[#00A3E0]/[0.055] blur-[110px]" />
-        <div className="absolute -bottom-48 -left-40 h-[32rem] w-[32rem] rounded-full bg-[#FFC72C]/[0.07] blur-[110px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(#0C2340_0.55px,transparent_0.55px)] bg-[size:25px_25px] opacity-[0.025]" />
-      </div>
-
-      <div className="mx-auto w-full max-w-7xl px-5 pb-6 pt-5 sm:px-8 sm:pt-7 lg:px-12">
+    <main className="min-h-screen bg-[#F7F9FC]">
         <GuidelinesHero />
-
         <div className="mx-auto max-w-5xl">
           <GuidelinesOverview />
-
-          {/* Detailed guidelines */}
           <section
             id="guidelines"
             aria-label="Assessment guideline sections"
-            className="rounded-[24px] border border-slate-200/80 bg-white px-5 py-8 shadow-[0_24px_70px_-55px_rgba(12,35,64,0.4)] sm:px-8 sm:py-10 lg:px-10"
+            className="rounded-[24px] border border-slate-200/80 bg-transparent px-5 py-8 shadow-[0_24px_70px_-55px_rgba(12,35,64,0.4)] sm:px-8 sm:py-10 lg:px-10"
           >
             <div className="mb-8 border-b border-slate-200/80 pb-6">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#007FAF]">
@@ -70,15 +56,10 @@ export default function AssessmentGuidelines() {
             <GuidelinesCallout />
           </div>
 
-          <div className="mt-8">
-            <GuidelinesChecklist assessmentHref="/client" />
+          <div className="my-8">
+            <GuidelinesChecklist assessmentHref="/portal" />
           </div>
         </div>
-
-        {/* <div className="mt-10">
-          <GuidelinesFooter />
-        </div> */}
-      </div>
     </main>
   );
 }

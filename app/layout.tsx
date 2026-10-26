@@ -1,8 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Cormorant, Geist } from 'next/font/google'
-import Navbar from '@/components/Navbar'
+import { Header } from '@/components/Header'
 import { cn } from "@/lib/utils";
+import Footer from '@/components/Footer';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -25,10 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className={`${inter.className} ${cormorant.className}`}>
-        <Navbar />
+        <Header />
         <div className="flex-1">
           {children}
         </div>
+
+        <div className="relative z-10">
+        <Footer />
+      </div>
       </body>
     </html>
   )

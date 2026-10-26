@@ -1,21 +1,11 @@
 
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-} from "framer-motion";
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-} from "lucide-react";
-
-import type { getHomeConfig } from "./utils/config";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import type { getHomeConfig } from "@/utils/config";
 import ContactMediaDialog from "@/dialogs/contact-dialog";
 
 type HomeConfig = ReturnType<typeof getHomeConfig>;

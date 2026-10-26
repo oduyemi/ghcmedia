@@ -10,7 +10,7 @@ const navItems = [
   { name: "Ratings & Reports", href: "/ratings" },
 ]
 
-export default function Navbar() {
+export const Header = () => {
   const mobileMenuRef = useRef<HTMLInputElement>(null)
 
   const handleMobileMenuClick = () => {

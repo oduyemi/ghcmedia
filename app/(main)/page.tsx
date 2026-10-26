@@ -25,10 +25,6 @@ export default function Homepage() {
           <Home config={config} />
         </div>
       </main>
-
-      <div className="relative z-10">
-        <Footer />
-      </div>
     </div>
   );
 }

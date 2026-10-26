@@ -107,16 +107,15 @@ export default function ContactMediaDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0C2340]/35 bg-transparent px-7 text-sm font-semibold text-[#0C2340] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0C2340] hover:bg-[#0C2340]/[0.04] focus-visible:ring-2 focus-visible:ring-[#00A3E0] sm:w-auto sm:min-w-[190px]"
-        >
-          Contact Media Leadership
-          <MessageCircle className="ml-2 h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => handleOpenChange(true)}
+        className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0C2340]/35 bg-transparent px-7 text-sm font-semibold text-[#0C2340] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0C2340] hover:bg-[#0C2340]/[0.04] focus-visible:ring-2 focus-visible:ring-[#00A3E0] sm:w-auto sm:min-w-[190px]"
+      >
+        Contact Media Leadership
+        <MessageCircle className="ml-2 h-4 w-4" />
+      </Button>
 
       <DialogContent className="max-h-[90dvh] overflow-y-auto border-0 bg-white p-0 shadow-2xl sm:max-w-[640px] sm:rounded-3xl">
         {success ? (
@@ -234,7 +233,11 @@ export default function ContactMediaDialog({
                   </Label>
                   <Select
                     value={form.enquiryType}
-                    onValueChange={(value) => updateField("enquiryType", value)}
+                    onValueChange={(value) => {
+                      if (value !== null) {
+                        updateField("enquiryType", value);
+                      }
+                    }}
                   >
                     <SelectTrigger
                       id="contact-enquiry"
