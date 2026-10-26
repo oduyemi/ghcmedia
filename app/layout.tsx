@@ -1,40 +1,28 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter, Cormorant, Geist } from 'next/font/google'
-import { Header } from '@/components/Header'
-import { cn } from "@/lib/utils";
-import Footer from '@/components/Footer';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const inter = Inter({ subsets: ['latin'] })
-const cormorant = Cormorant({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
-})
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
-  title: 'Nimmal Gallery',
-  description: 'A collection of visual stories',
-}
+  title: {
+    default: "Global Harvest Church Maryland, Lagos",
+    template: "%s | Media Team",
+  },
+  description: "A reporting and analysis portal",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className={`${inter.className} ${cormorant.className}`}>
-        <Header />
-        <div className="flex-1">
-          {children}
-        </div>
-
-        <div className="relative z-10">
-        <Footer />
-      </div>
-      </body>
+    <html lang="en" className={geist.variable}>
+      <body className="font-sans antialiased">{children}</body>
     </html>
-  )
-} 
+  );
+}
