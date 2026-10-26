@@ -1,0 +1,57 @@
+
+{
+  "hero": {
+    "title": "Excellence in Every Frame. Purpose in Every Story.",
+    "subtitle": "Global Harvest Church — Media Team Assessment Portal",
+    "description": "A dedicated platform for coordinating media assessments, completing service checklists, reviewing performance ratings, and tracking progress across the Global Harvest Church Media Team.",
+    "cta": {
+      "primary": "Login",
+      "secondary": "Contact Media Leadership"
+    },
+    "backgroundImage": "/images/hero0.jpg"
+  },
+  "featuredCollections": [
+    {
+      "id": "assessments",
+      "title": "Media Assessments",
+      "description": "Access assigned assessments, evaluate media team performance, and record ratings against established criteria.",
+      "image": "/images/media1.jpeg",
+      "link": "/login"
+    },
+    {
+      "id": "checklists",
+      "title": "Service Checklists",
+      "description": "Review essential media production checks, monitor completion for each service, and support consistent operational standards.",
+      "image": "/images/media2.jpeg",
+      "link": "/checklist"
+    },
+    {
+      "id": "ratings-reports",
+      "title": "Ratings & Reports",
+      "description": "Explore weekly, monthly, and custom date-range reports to understand performance trends, checklist completion, and opportunities for improvement.",
+      "image": "/images/media3.jpg",
+      "link": "/ratings"
+    }
+  ],
+  "services": [
+    {
+      "id": "assessment-coordination",
+      "title": "Assessment Coordination",
+      "description": "Organize assessment assignments, evaluation criteria, instructions, and deadlines to support a consistent review process.",
+      "icon": "clipboard-check"
+    },
+    {
+      "id": "service-readiness",
+      "title": "Service Readiness & Checklists",
+      "description": "Track essential preparation and operational checks for each service, helping the team maintain reliable media production standards.",
+      "icon": "list-checks"
+    },
+    {
+      "id": "performance-tracking",
+      "title": "Performance Tracking & Insights",
+      "description": "Monitor ratings over time, review checklist completion, identify recurring production issues, and support continuous improvement.",
+      "icon": "chart-no-axes-combined"
+    }
+  ],
+  "testimonials": []
+}
