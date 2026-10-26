@@ -59,7 +59,6 @@ const suggestions = [
 
 export default function NotFound() {
   const reduceMotion = useReducedMotion();
-
   const reveal = (delay = 0) =>
     reduceMotion
       ? {}
@@ -85,7 +84,6 @@ export default function NotFound() {
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[#07182D] text-white selection:bg-[#00A3E0]/30">
-      {/* Atmospheric background */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
