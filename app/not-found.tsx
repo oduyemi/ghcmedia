@@ -16,7 +16,6 @@ import {
   ShieldQuestion,
   Smile,
 } from "lucide-react";
-import { useEffect } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -61,10 +60,15 @@ const suggestions = [
 
 export default function NotFound() {
   const reduceMotion = useReducedMotion();
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
   }, []);
+
+    useEffect(() => {
+      setYear(new Date().getFullYear());
+    }, []);
 
   const reveal = (delay = 0) =>
     reduceMotion
