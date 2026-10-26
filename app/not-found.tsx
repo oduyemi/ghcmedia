@@ -1,5 +1,6 @@
 
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -15,6 +16,7 @@ import {
   ShieldQuestion,
   Smile,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -59,6 +61,11 @@ const suggestions = [
 
 export default function NotFound() {
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   const reveal = (delay = 0) =>
     reduceMotion
       ? {}
@@ -516,7 +523,7 @@ export default function NotFound() {
         {/* Footer */}
         <footer className="mt-10 flex flex-col gap-3 border-t border-white/[0.07] pt-5 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[10px] font-medium tracking-[0.04em] text-white/35 sm:text-[11px]">
-            © {new Date().getFullYear()} Global Harvest Church · Media Team
+            © {year ?? "2026"} Global Harvest Church · Media Team
           </p>
 
           <p className="flex items-center gap-2 text-[10px] text-white/35 sm:text-[11px]">
