@@ -66,7 +66,7 @@ import { Activity, CheckCircle2, ClipboardList, Percent } from "lucide-react";
     return (
       <section aria-label="Checklist summary">
         <div className="mb-4">
-          <h2 className="text-xl font-bold tracking-tight text-[#0C2340]">
+          <h2 className="text-xl font-bold tracking-tight text-[#0C2340] mt-4">
             Checklist overview
           </h2>
           <p className="mt-1 text-sm text-slate-500">
