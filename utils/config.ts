@@ -1,4 +1,3 @@
-
 import homeConfig from "../config/home.json";
 import type { HomeConfig } from "../types/config";
 

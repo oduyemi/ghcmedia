@@ -1,4 +1,3 @@
-
 import type { ChecklistRecord, ServiceType } from "@/types/checklist";
   
 

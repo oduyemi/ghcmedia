@@ -1,7 +1,6 @@
-
 "use client";
-
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -51,12 +50,30 @@ export const LoginForm = () => {
       if (!response.ok) {
         setError(
           result?.message ||
+            result?.error ||
             "We couldn't sign you in. Check your credentials and try again.",
         );
         return;
       }
 
-      router.replace("/client");
+      // First-time users must use their invitation link to set a password.
+      if (result?.user?.firstLogin) {
+        setError(
+          "Your account setup is not complete. Please use the password setup link sent to your email, or contact church leadership for a new invitation.",
+        );
+        return;
+      }
+
+      const role = result?.user?.role;
+
+      if (role !== "admin" && role !== "member") {
+        setError(
+          "Your account role could not be verified. Please contact church leadership.",
+        );
+        return;
+      }
+
+      router.replace(role === "admin" ? "/admin" : "/portal");
       router.refresh();
     } catch {
       setError(
@@ -76,7 +93,6 @@ export const LoginForm = () => {
       className="space-y-5"
       aria-busy={isSubmitting}
     >
-      {/* Email address */}
       <div className="space-y-2">
         <Label
           htmlFor="email"
@@ -104,8 +120,7 @@ export const LoginForm = () => {
         />
       </div>
 
-      {/* Password */}
-      <div className="space-y-4 my-4">
+      <div className="my-4 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <Label
             htmlFor="password"
@@ -114,12 +129,12 @@ export const LoginForm = () => {
             Password
           </Label>
 
-          <a
-            href="/contact"
-            className="text-xs font-medium text-[#007FAF] underline-offset-4 transition-colors hover:text-[#0C2340] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2"
+          <Link
+            href="/forgot-password"
+            className="text-xs font-semibold text-[#007FAF] underline-offset-4 transition-colors hover:text-[#0C2340] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2"
           >
-            Need help signing in?
-          </a>
+            Forgot password?
+          </Link>
         </div>
 
         <div className="relative mb-4">
@@ -157,7 +172,6 @@ export const LoginForm = () => {
         </div>
       </div>
 
-      {/* Authentication error */}
       {error && (
         <div
           role="alert"
@@ -167,12 +181,10 @@ export const LoginForm = () => {
           <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-100">
             <span className="text-xs font-bold">!</span>
           </span>
-
           <p className="leading-5">{error}</p>
         </div>
       )}
 
-      {/* Sign-in button — original blue colors preserved */}
       <Button
         type="submit"
         disabled={isSubmitting || !email.trim() || !password}
@@ -197,7 +209,6 @@ export const LoginForm = () => {
         )}
       </Button>
 
-      {/* Security notice */}
       <div className="relative overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50/80 p-4">
         <div
           aria-hidden="true"
@@ -206,15 +217,13 @@ export const LoginForm = () => {
 
         <div className="flex items-start gap-3 pl-1">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#00A3E0]/10 bg-white text-[#007FAF] shadow-sm">
-            <LockKeyhole className="h-[18px] w-[18px]" />
+            <LockKeyhole aria-hidden="true" className="h-[18px] w-[18px]" />
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <p className="text-xs font-semibold text-[#0C2340]">
-                Private team access
-              </p>
-            </div>
+            <p className="text-xs font-semibold text-[#0C2340]">
+              Private team access
+            </p>
 
             <p className="mt-1.5 text-[11px] leading-[1.7] text-slate-500">
               This portal is exclusively for authorized Media Team members.

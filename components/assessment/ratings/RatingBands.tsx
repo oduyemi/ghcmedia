@@ -1,6 +1,5 @@
 
 "use client";
-
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Award,

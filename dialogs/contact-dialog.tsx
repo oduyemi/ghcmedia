@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, LoaderCircle, MessageCircle, X } from "lucide-react";
@@ -38,7 +37,10 @@ interface ContactFormData {
 
 interface ContactMediaDialogProps {
   onSubmit?: (data: ContactFormData) => Promise<void> | void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
+
 
 const initialForm: ContactFormData = {
   name: "",
@@ -51,12 +53,19 @@ const initialForm: ContactFormData = {
 
 export default function ContactMediaDialog({
   onSubmit,
-}: ContactMediaDialogProps) {
-  const [open, setOpen] = useState(false);
+  open: controlledOpen,
+  onOpenChange,
+}: ContactMediaDialogProps)  {
+    const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
   const [form, setForm] = useState<ContactFormData>(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  
+
 
   function updateField<K extends keyof ContactFormData>(
     field: K,
@@ -97,25 +106,32 @@ export default function ContactMediaDialog({
   }
 
   function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen);
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+
+    onOpenChange?.(nextOpen);
 
     if (!nextOpen) {
       setError("");
       setSuccess(false);
     }
-  }
+  }  
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => handleOpenChange(true)}
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0C2340]/35 bg-transparent px-7 text-sm font-semibold text-[#0C2340] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0C2340] hover:bg-[#0C2340]/[0.04] focus-visible:ring-2 focus-visible:ring-[#00A3E0] sm:w-auto sm:min-w-[190px]"
-      >
-        Contact Media Leadership
-        <MessageCircle className="ml-2 h-4 w-4" />
-      </Button>
+    
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        {!isControlled && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(true)}
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#0C2340]/35 bg-transparent px-7 text-sm font-semibold text-[#0C2340] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0C2340] hover:bg-[#0C2340]/[0.04] focus-visible:ring-2 focus-visible:ring-[#00A3E0] sm:w-auto sm:min-w-[190px]"
+          >
+            Contact Media Leadership
+            <MessageCircle className="ml-2 h-4 w-4" />
+          </Button>
+        )}
 
       <DialogContent className="max-h-[90dvh] overflow-y-auto border-0 bg-white p-0 shadow-2xl sm:max-w-[640px] sm:rounded-3xl">
         {success ? (
@@ -138,7 +154,7 @@ export default function ContactMediaDialog({
               type="button"
               onClick={() => {
                 setSuccess(false);
-                setOpen(false);
+                handleOpenChange(false);
               }}
               className="mt-8 min-h-11 rounded-full bg-[#0C2340] px-7 text-white hover:bg-[#00A3E0]"
             >

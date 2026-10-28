@@ -1,4 +1,3 @@
-
 import { CalendarDays, Check, Clock3, Radio } from "lucide-react";
 import { services } from "@/data/checklist";
 import type { ServiceFilter } from "@/types/checklist";

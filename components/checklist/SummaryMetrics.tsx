@@ -1,4 +1,3 @@
-
 import { Activity, CheckCircle2, ClipboardList, Percent } from "lucide-react";
   import type { ChecklistRecord } from "@/types/checklist";
   

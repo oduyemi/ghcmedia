@@ -1,4 +1,3 @@
-
 "use client";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, CalendarRange, Check, ChevronRight, Clock3 } from "lucide-react";
