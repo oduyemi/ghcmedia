@@ -12,29 +12,49 @@ import {
   Sparkles,
 } from "lucide-react";
 
+interface RatingsHeroProps {
+  serviceAssessments?: number | null;
+  publishedReports?: number | null;
+  checklistCompletion?: number | null;
+}
+
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const metrics = [
-  {
-    label: "Service assessments",
-    value: "—",
-    icon: ClipboardCheck,
-  },
-  {
-    label: "Published reports",
-    value: "—",
-    icon: FileBarChart2,
-  },
-  {
-    label: "Checklist completion",
-    value: "—",
-    icon: CheckCircle2,
-  },
-];
-
-export const RatingsHero = () => {
+export const RatingsHero = ({
+  serviceAssessments = null,
+  publishedReports = null,
+  checklistCompletion = null,
+}: RatingsHeroProps) => {
   const shouldReduceMotion = useReducedMotion();
   const reduceMotion = shouldReduceMotion ?? false;
+
+  const formatCount = (value: number | null | undefined) =>
+    typeof value === "number" && Number.isFinite(value)
+      ? value.toLocaleString()
+      : "—";
+
+  const formatPercentage = (value: number | null | undefined) =>
+    typeof value === "number" && Number.isFinite(value)
+      ? `${Math.round(value)}%`
+      : "—";
+
+  const metrics = [
+    {
+      label: "Service assessments",
+      value: formatCount(serviceAssessments),
+      icon: ClipboardCheck,
+    },
+    {
+      label: "Published reports",
+      value: formatCount(publishedReports),
+      icon: FileBarChart2,
+    },
+    {
+      label: "Checklist completion",
+      value: formatPercentage(checklistCompletion),
+      icon: CheckCircle2,
+    },
+  ];
 
   const reveal = (delay = 0) => ({
     initial: reduceMotion ? false : { opacity: 0, y: 22 },
@@ -109,7 +129,7 @@ export const RatingsHero = () => {
             Ratings
             <br />
             <span className="bg-gradient-to-r from-[#41B6E6] via-[#78D7F4] to-white bg-clip-text text-transparent">
-              & Reports
+              &amp; Reports
             </span>
           </motion.h1>
 
@@ -306,7 +326,7 @@ export const RatingsHero = () => {
                   </div>
                 </div>
 
-                {/* Preview metrics */}
+                {/* Dynamic preview metrics */}
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {metrics.map((metric) => {
                     const Icon = metric.icon;
@@ -348,7 +368,10 @@ export const RatingsHero = () => {
                     </span>
                   </div>
 
-                  <div className="mt-5 flex h-16 items-end gap-2" aria-hidden="true">
+                  <div
+                    className="mt-5 flex h-16 items-end gap-2"
+                    aria-hidden="true"
+                  >
                     {[32, 48, 39, 58, 44, 68, 51, 62, 43, 55, 36, 48].map(
                       (height, index) => (
                         <div
@@ -396,4 +419,4 @@ export const RatingsHero = () => {
       </div>
     </section>
   );
-}
+};

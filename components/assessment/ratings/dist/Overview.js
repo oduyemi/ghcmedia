@@ -167,10 +167,10 @@ exports.RatingsOverview = function (_a) {
         title: "The bigger picture.",
         description: "A clearer view of Media Team assessment and reporting activity. Better visibility helps us celebrate what's working and see where we can grow."
     };
-    return (React.createElement("section", { "aria-labelledby": "ratings-overview-title", className: "relative isolate overflow-hidden bg-[#F8FAFD] py-16 sm:py-20 lg:py-24" },
+    return (React.createElement("section", { "aria-labelledby": "ratings-overview-title", className: "relative isolate overflow-hidden bg-[#F8FAFD] py-12 sm:py-16 lg:py-24" },
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-36 -top-24 -z-10 h-96 w-96 rounded-full bg-[#C8F0FF]/45 blur-3xl" }),
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -bottom-40 -left-32 -z-10 h-96 w-96 rounded-full bg-[#E8DDFF]/35 blur-3xl" }),
-        React.createElement("div", { className: "mx-auto max-w-7xl px-5 sm:px-8 lg:px-10" },
+        React.createElement("div", { className: "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10" },
             React.createElement("div", { className: "grid items-end gap-7 lg:grid-cols-[1fr_auto] lg:gap-12" },
                 React.createElement("div", { className: "max-w-3xl" },
                     React.createElement("div", { id: "ratings-overview-title" },
@@ -182,7 +182,7 @@ exports.RatingsOverview = function (_a) {
                         "Greater impact."),
                     React.createElement("svg", { "aria-hidden": "true", viewBox: "0 0 180 20", fill: "none", className: "ml-auto mt-2 w-32 text-[#00A3E0]" },
                         React.createElement("path", { d: "M3 15C44 3 95 1 174 7", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" })))),
-            React.createElement("div", { className: "mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6 xl:gap-4" }, metrics.map(function (metric, index) {
+            React.createElement("div", { className: "mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-5" }, metrics.map(function (metric, index) {
                 var Icon = metric.icon;
                 var theme = metric.theme;
                 var style = themeStyles[theme];
@@ -194,9 +194,11 @@ exports.RatingsOverview = function (_a) {
                         delay: reduceMotion ? 0 : index * 0.07,
                         ease: ease
                     }, className: [
-                        "group relative isolate flex min-h-[285px] flex-col overflow-hidden rounded-[1.75rem] border p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_48px_rgba(12,35,64,0.11)] sm:min-h-[285px] sm:p-6",
+                        "group relative isolate flex min-h-[280px] min-w-0 flex-col overflow-hidden rounded-[1.5rem] border p-5",
+                        "transition-[transform,box-shadow] duration-300 sm:rounded-[1.75rem] sm:p-6",
+                        "motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_22px_48px_rgba(12,35,64,0.11)]",
                         featured
-                            ? "min-h-[330px] border-[#164A76] bg-[#0C2340] text-white shadow-[0_14px_35px_rgba(12,35,64,0.16)] sm:col-span-2 sm:min-h-[330px] sm:p-7 xl:col-span-2"
+                            ? "min-h-[310px] border-[#164A76] bg-[#0C2340] text-white shadow-[0_14px_35px_rgba(12,35,64,0.16)] sm:col-span-2 sm:min-h-[320px] xl:col-span-2"
                             : style.card + " xl:col-span-1",
                     ].join(" ") },
                     !featured && (React.createElement("div", { "aria-hidden": "true", className: "absolute -right-10 -top-10 -z-10 h-32 w-32 rounded-full transition-transform duration-500 group-hover:scale-125 " + style.decoration })),
@@ -219,22 +221,20 @@ exports.RatingsOverview = function (_a) {
                             available ? "Recorded" : "Awaiting data")),
                     React.createElement("div", { className: "relative z-10 mt-7" },
                         React.createElement("p", { className: [
-                                "font-black leading-none tracking-[-0.065em]",
+                                "break-words font-black leading-none tracking-[-0.055em] tabular-nums",
                                 featured
-                                    ? "text-5xl sm:text-6xl"
-                                    : "text-4xl sm:text-[2.65rem]",
+                                    ? "text-4xl sm:text-5xl lg:text-6xl"
+                                    : "text-3xl sm:text-4xl",
                                 featured ? "text-white" : "text-[#0C2340]",
                             ].join(" ") }, formatMetric(value, metric.suffix)),
                         React.createElement("h3", { className: [
-                                "mt-4 text-sm font-extrabold leading-5",
+                                "mt-4 text-sm font-extrabold leading-6 [overflow-wrap:anywhere]",
                                 featured ? "text-white" : style.label,
                             ].join(" ") }, metric.label),
                         React.createElement("p", { className: [
-                                "mt-2 max-w-[22rem] text-xs leading-5",
+                                "mt-2 max-w-[22rem] text-xs leading-5 [overflow-wrap:anywhere]",
                                 featured ? "text-slate-300" : "text-slate-500",
-                            ].join(" ") }, available
-                            ? metric.description
-                            : metric.emptyDescription)),
+                            ].join(" ") }, available ? metric.description : metric.emptyDescription)),
                     React.createElement(DecorativeArtwork, { theme: theme, value: typeof value === "number" ? value : null }),
                     React.createElement("div", { className: "relative z-10 mt-auto flex items-end justify-between pt-7" },
                         React.createElement("span", { className: [
@@ -258,11 +258,12 @@ exports.RatingsOverview = function (_a) {
                 React.createElement("div", { className: "flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:py-5" },
                     React.createElement("span", { className: "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#D5F3FF] text-[#0087BD]" },
                         React.createElement(lucide_react_1.Info, { className: "h-5 w-5", "aria-hidden": "true" })),
-                    React.createElement("div", { className: "flex-1" },
-                        React.createElement("p", { className: "text-sm leading-6 text-slate-600" },
-                            React.createElement("span", { className: "font-extrabold text-[#0C2340]" }, "A note on the numbers."),
-                            " ",
-                            "An unavailable metric is not zero. Ratings remain unavailable until the relevant scoring and approval policy is established. Figures should come from verified records when the reporting API is connected.")),
+                    React.createElement("div", { className: "mt-7 overflow-hidden rounded-2xl border border-[#BFE8FA] bg-gradient-to-r from-[#EAF9FF] via-white to-[#F1F7FF] sm:rounded-[1.5rem]" },
+                        React.createElement("div", { className: "flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-6" },
+                            React.createElement("p", { className: "text-sm leading-6 text-slate-600" },
+                                React.createElement("span", { className: "font-extrabold text-[#0C2340]" }, "A note on the numbers."),
+                                " ",
+                                "An unavailable metric is not zero. Ratings remain unavailable until the relevant scoring and approval policy is established. Figures should come from verified records when the reporting API is connected."))),
                     React.createElement("div", { className: "hidden shrink-0 border-l border-[#BFE8FA] pl-5 sm:block" },
                         React.createElement("p", { className: "text-sm font-extrabold text-[#0C2340]" }, "Real data."),
                         React.createElement("p", { className: "text-sm font-semibold text-[#0087BD]" }, "Real progress.")))),

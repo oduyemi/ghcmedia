@@ -166,7 +166,6 @@ function calculateCameraScore(scores) {
     })) {
         return null;
     }
-    // Narrow the validated values to number[].
     var validValues = values;
     var total = validValues.reduce(function (sum, value) { return sum + value; }, 0);
     var maximum = exports.cameraCriteria.length * 5;

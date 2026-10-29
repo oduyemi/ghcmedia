@@ -69,7 +69,6 @@ export const Commitment = () => {
             </div>
 
             <p className="mt-7 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#007FAF]">
-              <span className="h-px w-6 bg-[#00A3E0]" />
               Our commitment
             </p>
 

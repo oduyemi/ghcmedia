@@ -1,3 +1,5 @@
+export type SpecialProgrammeVisibility = "private" | "public";
+
 export type RatingBand =
 | "Excellent"
 | "Very Good"
@@ -72,19 +74,28 @@ sourceAssessmentIds: string[];
 sourceChecklistSubmissionIds: string[];
 }
 
+
+export type SpecialProgrammeStatus =
+  | "draft"
+  | "pending_review"
+  | "approved"
+  | "published";
+
+
 export interface SpecialProgramme {
-id: string;
-title: string;
-slug: string;
-category: string;
-startDate: string;
-endDate: string;
-description: string;
-venue: string;
-status: ReportStatus;
-visibility: ReportVisibility;
-reportId?: string;
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  venue: string;
+  status: SpecialProgrammeStatus;
+  visibility: SpecialProgrammeVisibility;
+  reportId?: string | null;
 }
+
 
 export interface RatingBandDefinition {
 label: RatingBand;
@@ -302,9 +313,7 @@ export function calculateCameraScore(
       return null;
     }
   
-    // Narrow the validated values to number[].
     const validValues = values as number[];
-  
     const total = validValues.reduce(
       (sum, value) => sum + value,
       0,

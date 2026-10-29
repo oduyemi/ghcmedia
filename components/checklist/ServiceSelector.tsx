@@ -26,7 +26,7 @@ const options: {
     return (
       <section aria-labelledby="service-selector-title">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#007FAF]">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#007FAF] mt-12">
             Services
           </p>
   

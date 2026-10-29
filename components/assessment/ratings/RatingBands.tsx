@@ -1,17 +1,9 @@
-
 "use client";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  Award,
-  CheckCircle2,
-  CircleHelp,
-  Gauge,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-
+import { Award, CheckCircle2, CircleHelp, Gauge, ShieldCheck, Sparkles } from "lucide-react";
 import { ratingBands } from "@/data/ratings";
 import { SectionHeading } from "@/components/assessment/ratings/shared/Heading";
+
 
 interface RatingBandsProps {
   showDescriptions?: boolean;
@@ -35,6 +27,8 @@ const bandRanges = [
   { start: 0, end: 60 },
 ];
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 function formatRange(start: number, end: number): string {
   if (start === 90) return "90–100%";
   if (start === 0) return "Below 60%";
@@ -53,7 +47,7 @@ export const RatingBands = ({
     <section
       id="rating-bands"
       aria-labelledby="rating-bands-heading"
-      className={`mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 sm:py-16 lg:px-10 ${className}`}
+      className={`mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10 ${className}`}
     >
       <SectionHeading
         eyebrow="Assessment guide"
@@ -61,15 +55,16 @@ export const RatingBands = ({
         description="Every approved score tells part of the story. Use these five performance bands as a consistent reference when reviewing assessment results."
       />
 
-      <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-slate-100 bg-gradient-to-br from-[#F7F9FC] via-white to-[#F0F9FD] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-          <div className="flex items-start gap-3">
+      <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm sm:mt-10 sm:rounded-3xl">
+        {/* Framework header */}
+        <div className="flex flex-col gap-4 border-b border-slate-100 bg-gradient-to-br from-[#F7F9FC] via-white to-[#F0F9FD] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5 lg:px-7">
+          <div className="flex min-w-0 items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0C2340] text-white shadow-sm">
               <ShieldCheck size={21} aria-hidden="true" />
             </div>
 
-            <div>
-              <h3 className="font-bold tracking-tight text-[#0C2340]">
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold leading-6 tracking-tight text-[#0C2340] sm:text-base">
                 The performance framework
               </h3>
               <p className="mt-1 max-w-xl text-sm leading-6 text-slate-500">
@@ -78,17 +73,21 @@ export const RatingBands = ({
             </div>
           </div>
 
-          <div className="flex w-fit items-center gap-2 rounded-full border border-[#00A3E0]/20 bg-white px-3.5 py-2 text-xs font-semibold text-[#0C2340] shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-[#00A3E0]" />
+          <div className="flex w-fit max-w-full items-center gap-2 rounded-full border border-[#00A3E0]/20 bg-white px-3 py-2 text-xs font-semibold leading-5 text-[#0C2340] shadow-sm sm:shrink-0 sm:px-3.5">
+            <span
+              className="h-2 w-2 shrink-0 rounded-full bg-[#00A3E0]"
+              aria-hidden="true"
+            />
             Percentage-based ratings
           </div>
         </div>
 
+        {/* Rating cards */}
         <div
-          className={`grid gap-4 p-4 sm:p-5 lg:gap-5 lg:p-6 ${
+          className={`grid grid-cols-1 gap-4 p-3 sm:grid-cols-2 sm:gap-4 sm:p-5 lg:gap-5 lg:p-6 ${
             compact
-              ? "sm:grid-cols-2 lg:grid-cols-5"
-              : "sm:grid-cols-2 lg:grid-cols-3"
+              ? "xl:grid-cols-5"
+              : "lg:grid-cols-3"
           }`}
         >
           {ratingBands.map((band, index) => {
@@ -105,24 +104,29 @@ export const RatingBands = ({
                   reduceMotion ? false : { opacity: 0, y: 14 }
                 }
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
+                viewport={{ once: true, amount: 0.12 }}
                 transition={{
                   duration: reduceMotion ? 0 : 0.35,
                   delay: reduceMotion ? 0 : index * 0.055,
+                  ease,
                 }}
                 whileHover={reduceMotion ? undefined : { y: -3 }}
-                className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-[border-color,box-shadow] duration-300 hover:border-slate-300 hover:shadow-[0_12px_32px_rgba(12,35,64,0.08)]"
+                className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-[border-color,box-shadow] duration-300 motion-safe:hover:border-slate-300 motion-safe:hover:shadow-[0_12px_32px_rgba(12,35,64,0.08)]"
               >
                 <div
-                  className="h-1 w-full"
+                  className="h-1 w-full shrink-0"
                   style={{ backgroundColor: band.color }}
                   aria-hidden="true"
                 />
 
-                <div className={compact ? "p-4" : "p-5"}>
-                  <div className="flex items-start justify-between gap-3">
+                <div
+                  className={`flex h-full min-w-0 flex-col ${
+                    compact ? "p-4" : "p-4 sm:p-5"
+                  }`}
+                >
+                  <div className="flex min-w-0 items-start justify-between gap-3">
                     <div
-                      className="flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ring-inset ring-black/[0.03] transition-transform duration-300 group-hover:scale-105"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ring-black/[0.03] transition-transform duration-300 motion-safe:group-hover:scale-105 sm:h-12 sm:w-12 sm:rounded-2xl"
                       style={{
                         color: band.color,
                         backgroundColor: band.background,
@@ -136,7 +140,7 @@ export const RatingBands = ({
                     </div>
 
                     <span
-                      className="inline-flex max-w-full items-center rounded-full px-3 py-1.5 text-xs font-bold tabular-nums"
+                      className="inline-flex max-w-[65%] min-w-0 items-center justify-center rounded-full px-2.5 py-1.5 text-right text-[11px] font-bold leading-4 tabular-nums sm:px-3 sm:text-xs"
                       style={{
                         color: band.color,
                         backgroundColor: band.background,
@@ -146,34 +150,32 @@ export const RatingBands = ({
                     </span>
                   </div>
 
-                  <div className="mt-5">
-                    <div className="mb-2 flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                        Level {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </div>
+                  <div className="mt-5 flex-1">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Level {String(index + 1).padStart(2, "0")}
+                    </p>
 
                     <h3
-                      className="text-lg font-bold leading-snug tracking-tight"
+                      className="break-words text-lg font-bold leading-snug tracking-tight [overflow-wrap:anywhere]"
                       style={{ color: band.color }}
                     >
                       {band.label}
                     </h3>
 
                     {showDescriptions && (
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                      <p className="mt-2 break-words text-sm leading-6 text-slate-600 [overflow-wrap:anywhere]">
                         {band.description}
                       </p>
                     )}
                   </div>
 
                   <div className="mt-5 border-t border-slate-100 pt-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-xs font-medium text-slate-500">
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-xs leading-5 font-medium text-slate-500">
                         Score range
                       </span>
                       <span
-                        className="text-xs font-bold tabular-nums"
+                        className="text-right text-xs leading-5 font-bold tabular-nums"
                         style={{ color: band.color }}
                       >
                         {range
@@ -190,9 +192,7 @@ export const RatingBands = ({
                       {range && (
                         <motion.div
                           initial={
-                            reduceMotion
-                              ? false
-                              : { width: 0 }
+                            reduceMotion ? false : { width: 0 }
                           }
                           whileInView={{
                             width: `${range.end - range.start}%`,
@@ -225,12 +225,16 @@ export const RatingBands = ({
         </div>
       </div>
 
+      {/* Guidance panel */}
       <motion.aside
         initial={reduceMotion ? false : { opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: reduceMotion ? 0 : 0.35 }}
-        className="relative mt-6 overflow-hidden rounded-2xl border border-[#00A3E0]/20 bg-[#F0F9FD]"
+        transition={{
+          duration: reduceMotion ? 0 : 0.35,
+          ease,
+        }}
+        className="relative mt-5 overflow-hidden rounded-2xl border border-[#00A3E0]/20 bg-[#F0F9FD] sm:mt-6"
         aria-labelledby="rating-guidance-heading"
       >
         <div
@@ -238,15 +242,15 @@ export const RatingBands = ({
           aria-hidden="true"
         />
 
-        <div className="flex items-start gap-4 p-5 sm:p-6">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#00A3E0]/10 bg-white text-[#0087BD] shadow-sm">
+        <div className="flex items-start gap-3 p-4 sm:gap-4 sm:p-6">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00A3E0]/10 bg-white text-[#0087BD] shadow-sm sm:h-11 sm:w-11">
             <CircleHelp size={21} aria-hidden="true" />
           </div>
 
           <div className="min-w-0">
             <h3
               id="rating-guidance-heading"
-              className="font-bold tracking-tight text-[#0C2340]"
+              className="break-words text-sm font-bold leading-6 tracking-tight text-[#0C2340] sm:text-base"
             >
               A score is a starting point, not the whole story.
             </h3>

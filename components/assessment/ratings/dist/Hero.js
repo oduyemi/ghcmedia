@@ -17,26 +17,37 @@ var link_1 = require("next/link");
 var framer_motion_1 = require("framer-motion");
 var lucide_react_1 = require("lucide-react");
 var ease = [0.22, 1, 0.36, 1];
-var metrics = [
-    {
-        label: "Service assessments",
-        value: "—",
-        icon: lucide_react_1.ClipboardCheck
-    },
-    {
-        label: "Published reports",
-        value: "—",
-        icon: lucide_react_1.FileBarChart2
-    },
-    {
-        label: "Checklist completion",
-        value: "—",
-        icon: lucide_react_1.CheckCircle2
-    },
-];
-exports.RatingsHero = function () {
+exports.RatingsHero = function (_a) {
+    var _b = _a.serviceAssessments, serviceAssessments = _b === void 0 ? null : _b, _c = _a.publishedReports, publishedReports = _c === void 0 ? null : _c, _d = _a.checklistCompletion, checklistCompletion = _d === void 0 ? null : _d;
     var shouldReduceMotion = framer_motion_1.useReducedMotion();
     var reduceMotion = shouldReduceMotion !== null && shouldReduceMotion !== void 0 ? shouldReduceMotion : false;
+    var formatCount = function (value) {
+        return typeof value === "number" && Number.isFinite(value)
+            ? value.toLocaleString()
+            : "—";
+    };
+    var formatPercentage = function (value) {
+        return typeof value === "number" && Number.isFinite(value)
+            ? Math.round(value) + "%"
+            : "—";
+    };
+    var metrics = [
+        {
+            label: "Service assessments",
+            value: formatCount(serviceAssessments),
+            icon: lucide_react_1.ClipboardCheck
+        },
+        {
+            label: "Published reports",
+            value: formatCount(publishedReports),
+            icon: lucide_react_1.FileBarChart2
+        },
+        {
+            label: "Checklist completion",
+            value: formatPercentage(checklistCompletion),
+            icon: lucide_react_1.CheckCircle2
+        },
+    ];
     var reveal = function (delay) {
         if (delay === void 0) { delay = 0; }
         return ({

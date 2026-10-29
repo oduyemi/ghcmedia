@@ -14,7 +14,7 @@ exports.ServiceSelector = function (_a) {
     var value = _a.value, onChange = _a.onChange;
     return (React.createElement("section", { "aria-labelledby": "service-selector-title" },
         React.createElement("div", null,
-            React.createElement("p", { className: "text-xs font-bold uppercase tracking-[0.16em] text-[#007FAF]" }, "Services"),
+            React.createElement("p", { className: "text-xs font-bold uppercase tracking-[0.16em] text-[#007FAF] mt-12" }, "Services"),
             React.createElement("h2", { id: "service-selector-title", className: "mt-2 text-xl font-bold tracking-tight text-[#0C2340]" }, "Explore by service"),
             React.createElement("p", { className: "mt-2 text-sm leading-6 text-slate-500" }, "Select a service to narrow the checklist records.")),
         React.createElement("div", { className: "mt-5 flex flex-wrap gap-2" }, options.map(function (option) {

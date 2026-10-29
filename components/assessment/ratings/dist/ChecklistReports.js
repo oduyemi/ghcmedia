@@ -208,7 +208,7 @@ exports.ChecklistReports = function (_a) {
                                     "View checklist report",
                                     React.createElement(lucide_react_1.ArrowRight, { className: "h-4 w-4 transition-transform group-hover:translate-x-1", "aria-hidden": "true" }))))));
                 })))),
-            React.createElement("p", { className: "mt-6 text-xs leading-6 text-slate-400" }, "Completion excludes items marked not applicable. Missing answers are not automatically treated as zero, and checklist completion is separate from camera assessment ratings."))));
+            React.createElement("p", { className: "mt-6 text-xs leading-6 text-slate-400 text-center" }, "Completion excludes items marked not applicable. Missing answers are not automatically treated as zero, and checklist completion is separate from camera assessment ratings."))));
 };
 function SummaryCard(_a) {
     var Icon = _a.icon, label = _a.label, value = _a.value, description = _a.description, theme = _a.theme;

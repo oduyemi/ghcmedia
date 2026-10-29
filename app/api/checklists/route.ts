@@ -7,6 +7,151 @@ import ChecklistSubmission from "@/models/checklistSubmission.model";
 import Notification from "@/models/notification.model";
 import { authorize, getAdmins } from "@/utils/reporting";
 import { sendEmailWithRetry } from "@/helper/emailLogic";
+import User from "@/models/user.model";
+import SpecialProgramme from "@/models/specialProgramme.model";
+
+
+
+export async function GET() {
+  try {
+    const { user, forbidden } = await authorize([
+      "member",
+      "admin",
+      "pastor",
+      "leader",
+    ]);
+
+    if (forbidden) return forbidden;
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required." },
+        { status: 401 },
+      );
+    }
+
+    await dbConnect();
+    const filter = user.role === "member"
+        ? { submittedBy: user._id }
+        : {};
+
+    const submissions = await ChecklistSubmission.find(filter)
+      .sort({ submittedAt: -1, createdAt: -1 })
+      .populate({
+        path: "serviceOccurrenceId",
+        select:
+          "serviceType serviceDateKey startsAt title status specialProgrammeId",
+        populate: {
+          path: "specialProgrammeId",
+          select: "title",
+        },
+      })
+      .populate({
+        path: "templateId",
+        select: "name version",
+      })
+      .populate({
+        path: "submittedBy",
+        select: "fname lname",
+      })
+      .populate({
+        path: "reviewedBy",
+        select: "fname lname",
+      })
+      .lean();
+
+    const reports = submissions.map((submission) => {
+      const occurrence = submission.serviceOccurrenceId as unknown as
+        | {
+            _id: mongoose.Types.ObjectId;
+            serviceType: string;
+            serviceDateKey: string;
+            startsAt: Date;
+            title?: string | null;
+            specialProgrammeId?: {
+              title?: string;
+            } | null;
+          }
+        | null;
+
+      const template = submission.templateId as unknown as
+        | { name?: string }
+        | null;
+
+      const submitter = submission.submittedBy as unknown as
+        | { fname?: string; lname?: string }
+        | null;
+
+      const reviewer = submission.reviewedBy as unknown as
+        | { fname?: string; lname?: string }
+        | null;
+
+      const serviceType = occurrence?.serviceType ?? "Service";
+      const programmeTitle =
+        occurrence?.specialProgrammeId?.title?.trim();
+
+      const serviceName =
+        programmeTitle ||
+        occurrence?.title?.trim() ||
+        serviceType
+          .replaceAll("_", " ")
+          .toLowerCase()
+          .replace(/\b\w/g, (character) => character.toUpperCase());
+
+      const completedItems = submission.items.filter(
+        (item) => item.status === "COMPLETED",
+      ).length;
+
+      const applicableItems = submission.items.filter(
+        (item) => item.status !== "NOT_APPLICABLE",
+      ).length;
+
+      const status = (() => {
+        switch (submission.submissionStatus) {
+          case "APPROVED":
+            return "approved";
+          case "REJECTED":
+            return "reviewed";
+          case "SUBMITTED":
+          case "PENDING_REVIEW":
+          default:
+            return "submitted";
+        }
+      })();
+
+      return {
+        id: String(submission._id),
+        title: template?.name || `${serviceName} checklist`,
+        serviceName,
+        date:
+          occurrence?.startsAt instanceof Date
+            ? occurrence.startsAt.toISOString()
+            : occurrence?.serviceDateKey ||
+              submission.submittedAt?.toISOString() ||
+              submission.createdAt.toISOString(),
+        status,
+        completedItems,
+        applicableItems,
+        submittedBy: [submitter?.fname, submitter?.lname]
+          .filter(Boolean)
+          .join(" ") || undefined,
+        reviewedBy: [reviewer?.fname, reviewer?.lname]
+          .filter(Boolean)
+          .join(" ") || undefined,
+      };
+    });
+
+    return NextResponse.json({ reports });
+  } catch (error) {
+    console.error("GET CHECKLISTS ERROR:", error);
+
+    return NextResponse.json(
+      { error: "Unable to load checklist reports." },
+      { status: 500 },
+    );
+  }
+}
+
+
 
 export async function POST(request: Request) {
   try {

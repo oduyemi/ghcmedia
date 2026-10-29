@@ -57,9 +57,11 @@ var ReportHistory_1 = require("@/components/assessment/ratings/ReportHistory");
 var ReportArchive_1 = require("@/components/assessment/ratings/ReportArchive");
 var RatingBands_1 = require("@/components/assessment/ratings/RatingBands");
 var SpecialProgrammes_1 = require("@/components/assessment/ratings/SpecialProgrammes");
-var ratings_detail_dialog_1 = require("@/dialogs/ratings-detail-dialog");
-var ReviewQueue_1 = require("./ReviewQueue");
 var ChecklistReports_1 = require("@/components/assessment/ratings/ChecklistReports");
+var ratings_detail_dialog_1 = require("@/dialogs/ratings-detail-dialog");
+var login_dialog_1 = require("@/dialogs/login-dialog");
+var feedback_dialog_1 = require("@/dialogs/feedback-dialog");
+var ReviewQueue_1 = require("./ReviewQueue");
 var normalizeStatus = function (status) {
     var _a;
     switch (status === null || status === void 0 ? void 0 : status.toUpperCase()) {
@@ -75,64 +77,132 @@ var normalizeStatus = function (status) {
             return (_a = status === null || status === void 0 ? void 0 : status.toLowerCase()) !== null && _a !== void 0 ? _a : "";
     }
 };
-var normalizeVisibility = function (visibility) {
-    var _a;
-    return (_a = visibility === null || visibility === void 0 ? void 0 : visibility.toLowerCase()) !== null && _a !== void 0 ? _a : "";
-};
+var normalizeVisibility = function (visibility) { var _a; return (_a = visibility === null || visibility === void 0 ? void 0 : visibility.toLowerCase()) !== null && _a !== void 0 ? _a : ""; };
 var normalizeReport = function (report) {
     var _a;
     return __assign(__assign({}, report), { id: (_a = report.id) !== null && _a !== void 0 ? _a : report._id, status: normalizeStatus(report.status), visibility: normalizeVisibility(report.visibility) });
 };
+var getErrorMessage = function (error, fallback) {
+    return error instanceof Error ? error.message : fallback;
+};
 exports.RatingsPageClient = function (_a) {
-    var initialReports = _a.reports, initialLoading = _a.loading, _b = _a.isLeadershipView, isLeadershipView = _b === void 0 ? false : _b;
-    var _c = react_1.useState(initialReports !== null && initialReports !== void 0 ? initialReports : []), apiReports = _c[0], setApiReports = _c[1];
-    var _d = react_1.useState(initialLoading !== null && initialLoading !== void 0 ? initialLoading : !initialReports), isLoading = _d[0], setIsLoading = _d[1];
-    var _e = react_1.useState(null), loadError = _e[0], setLoadError = _e[1];
-    var _f = react_1.useState(null), selectedReport = _f[0], setSelectedReport = _f[1];
-    var _g = react_1.useState(false), reportDialogOpen = _g[0], setReportDialogOpen = _g[1];
-    var _h = react_1.useState("all"), selectedService = _h[0], setSelectedService = _h[1];
+    var _b, _c, _d, _e, _f;
+    var initialReports = _a.reports, initialLoading = _a.loading, _g = _a.isLeadershipView, isLeadershipView = _g === void 0 ? false : _g;
+    // Authentication
+    var _h = react_1.useState(false), sessionChecked = _h[0], setSessionChecked = _h[1];
+    var _j = react_1.useState(false), isAuthenticated = _j[0], setIsAuthenticated = _j[1];
+    // Ratings state
+    var _k = react_1.useState(initialReports !== null && initialReports !== void 0 ? initialReports : []), apiReports = _k[0], setApiReports = _k[1];
+    var _l = react_1.useState(initialLoading !== null && initialLoading !== void 0 ? initialLoading : true), isLoading = _l[0], setIsLoading = _l[1];
+    var _m = react_1.useState(null), loadError = _m[0], setLoadError = _m[1];
+    var _o = react_1.useState(null), apiMetrics = _o[0], setApiMetrics = _o[1];
+    var _p = react_1.useState(null), assessmentsCount = _p[0], setAssessmentsCount = _p[1];
+    var _q = react_1.useState(0), ratingsRetry = _q[0], setRatingsRetry = _q[1];
+    // Checklist state
+    var _r = react_1.useState([]), checklistReports = _r[0], setChecklistReports = _r[1];
+    var _s = react_1.useState(false), checklistReportsLoading = _s[0], setChecklistReportsLoading = _s[1];
+    var _t = react_1.useState(null), checklistLoadError = _t[0], setChecklistLoadError = _t[1];
+    var _u = react_1.useState(0), checklistRetry = _u[0], setChecklistRetry = _u[1];
+    // Dialog and filter state
+    var _v = react_1.useState(null), selectedReport = _v[0], setSelectedReport = _v[1];
+    var _w = react_1.useState(false), reportDialogOpen = _w[0], setReportDialogOpen = _w[1];
+    var _x = react_1.useState(null), feedbackReport = _x[0], setFeedbackReport = _x[1];
+    var _y = react_1.useState("all"), selectedService = _y[0], setSelectedService = _y[1];
+    // Verify the current session
     react_1.useEffect(function () {
         var controller = new AbortController();
+        var checkSession = function () { return __awaiter(void 0, void 0, void 0, function () {
+            var response, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, 3, 4]);
+                        return [4 /*yield*/, fetch("/api/auth/me", {
+                                method: "GET",
+                                credentials: "same-origin",
+                                cache: "no-store",
+                                signal: controller.signal,
+                                headers: { Accept: "application/json" }
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        setIsAuthenticated(response.ok);
+                        return [3 /*break*/, 4];
+                    case 2:
+                        error_1 = _a.sent();
+                        if (error_1 instanceof Error && error_1.name === "AbortError") {
+                            return [2 /*return*/];
+                        }
+                        console.error("Unable to verify the current session:", error_1);
+                        setIsAuthenticated(false);
+                        return [3 /*break*/, 4];
+                    case 3:
+                        if (!controller.signal.aborted) {
+                            setSessionChecked(true);
+                        }
+                        return [7 /*endfinally*/];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); };
+        void checkSession();
+        return function () { return controller.abort(); };
+    }, []);
+    // Load ratings independently
+    react_1.useEffect(function () {
+        if (!sessionChecked)
+            return;
+        if (!isAuthenticated) {
+            setApiReports([]);
+            setApiMetrics(null);
+            setAssessmentsCount(null);
+            setIsLoading(false);
+            setLoadError(null);
+            return;
+        }
+        var controller = new AbortController();
         var loadReports = function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response, data, normalizedReports, error_1;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var response, data, error_2;
+            var _a, _b, _c, _d, _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         setIsLoading(true);
                         setLoadError(null);
-                        _c.label = 1;
+                        _f.label = 1;
                     case 1:
-                        _c.trys.push([1, 4, 5, 6]);
+                        _f.trys.push([1, 4, 5, 6]);
                         return [4 /*yield*/, fetch("/api/ratings", {
                                 method: "GET",
                                 credentials: "same-origin",
                                 cache: "no-store",
                                 signal: controller.signal,
-                                headers: {
-                                    Accept: "application/json"
-                                }
+                                headers: { Accept: "application/json" }
                             })];
                     case 2:
-                        response = _c.sent();
+                        response = _f.sent();
                         return [4 /*yield*/, response.json()];
                     case 3:
-                        data = (_c.sent());
+                        data = (_f.sent());
+                        if (response.status === 401) {
+                            setIsAuthenticated(false);
+                            return [2 /*return*/];
+                        }
                         if (!response.ok) {
                             throw new Error((_a = data.error) !== null && _a !== void 0 ? _a : "Unable to load ratings and reports.");
                         }
-                        normalizedReports = ((_b = data.reports) !== null && _b !== void 0 ? _b : []).map(normalizeReport);
-                        setApiReports(normalizedReports);
+                        setApiReports(((_b = data.reports) !== null && _b !== void 0 ? _b : []).map(normalizeReport));
+                        setApiMetrics((_c = data.metrics) !== null && _c !== void 0 ? _c : null);
+                        setAssessmentsCount((_e = (_d = data.metrics) === null || _d === void 0 ? void 0 : _d.assessmentsCount) !== null && _e !== void 0 ? _e : null);
                         return [3 /*break*/, 6];
                     case 4:
-                        error_1 = _c.sent();
-                        if (error_1 instanceof Error && error_1.name === "AbortError") {
+                        error_2 = _f.sent();
+                        if (error_2 instanceof Error &&
+                            error_2.name === "AbortError") {
                             return [2 /*return*/];
                         }
-                        console.error("Unable to load ratings:", error_1);
-                        setLoadError(error_1 instanceof Error
-                            ? error_1.message
-                            : "Unable to load ratings and reports.");
+                        console.error("Unable to load ratings:", error_2);
+                        setLoadError(getErrorMessage(error_2, "Unable to load ratings and reports."));
                         return [3 /*break*/, 6];
                     case 5:
                         if (!controller.signal.aborted) {
@@ -145,21 +215,77 @@ exports.RatingsPageClient = function (_a) {
         }); };
         void loadReports();
         return function () { return controller.abort(); };
-    }, []);
-    // Only use development fixtures when they are explicitly supplied by a
-    // development-only parent. Production API failures must not show fake data.
+    }, [sessionChecked, isAuthenticated, ratingsRetry]);
+    // Load checklist reports independently
+    react_1.useEffect(function () {
+        if (!sessionChecked)
+            return;
+        if (!isAuthenticated) {
+            setChecklistReports([]);
+            setChecklistReportsLoading(false);
+            setChecklistLoadError(null);
+            return;
+        }
+        var controller = new AbortController();
+        var loadChecklistReports = function () { return __awaiter(void 0, void 0, void 0, function () {
+            var response, data, error_3;
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        setChecklistReportsLoading(true);
+                        setChecklistLoadError(null);
+                        _c.label = 1;
+                    case 1:
+                        _c.trys.push([1, 4, 5, 6]);
+                        return [4 /*yield*/, fetch("/api/checklists", {
+                                method: "GET",
+                                credentials: "same-origin",
+                                cache: "no-store",
+                                signal: controller.signal,
+                                headers: { Accept: "application/json" }
+                            })];
+                    case 2:
+                        response = _c.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 3:
+                        data = (_c.sent());
+                        if (response.status === 401) {
+                            setIsAuthenticated(false);
+                            return [2 /*return*/];
+                        }
+                        if (!response.ok) {
+                            throw new Error((_a = data.error) !== null && _a !== void 0 ? _a : "Unable to load checklist reports.");
+                        }
+                        setChecklistReports((_b = data.reports) !== null && _b !== void 0 ? _b : []);
+                        return [3 /*break*/, 6];
+                    case 4:
+                        error_3 = _c.sent();
+                        if (error_3 instanceof Error &&
+                            error_3.name === "AbortError") {
+                            return [2 /*return*/];
+                        }
+                        console.error("Unable to load checklist reports:", error_3);
+                        setChecklistLoadError(getErrorMessage(error_3, "Unable to load checklist reports."));
+                        return [3 /*break*/, 6];
+                    case 5:
+                        if (!controller.signal.aborted) {
+                            setChecklistReportsLoading(false);
+                        }
+                        return [7 /*endfinally*/];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        }); };
+        void loadChecklistReports();
+        return function () { return controller.abort(); };
+    }, [sessionChecked, isAuthenticated, checklistRetry]);
+    // Report visibility
     var reports = apiReports;
-    var checklistReports = [];
-    var checklistReportsLoading = false;
-    var handleViewChecklistReport = react_1.useCallback(function (report) {
-        // Connect this to a checklist report detail dialog when available.
-        console.info("Selected checklist report:", report.id);
-    }, []);
     var visibleReports = react_1.useMemo(function () {
         return reports.filter(function (report) {
-            if (isLeadershipView) {
+            if (isLeadershipView)
                 return true;
-            }
             return (report.status === "published" &&
                 report.visibility === "public");
         });
@@ -170,17 +296,33 @@ exports.RatingsPageClient = function (_a) {
                 report.visibility === "public";
         });
     }, [visibleReports]);
+    // Service counts
     var serviceReportCounts = react_1.useMemo(function () {
-        var counts = {};
+        var counts = {
+            "sunday-business": 0,
+            "sunday-celebration": 0,
+            "wednesday-mc-live": 0,
+            "wednesday-wow": 0
+        };
+        var serviceTypeMap = {
+            BUSINESS: "sunday-business",
+            CELEBRATION: "sunday-celebration",
+            MC_LIVE: "wednesday-mc-live",
+            WOW: "wednesday-wow"
+        };
         publicReports.forEach(function (report) {
             var _a;
-            if (!report.serviceType)
+            if (report.reportType !== "SERVICE" || !report.serviceType) {
                 return;
-            counts[report.serviceType] =
-                ((_a = counts[report.serviceType]) !== null && _a !== void 0 ? _a : 0) + 1;
+            }
+            var serviceId = serviceTypeMap[report.serviceType];
+            if (serviceId) {
+                counts[serviceId] = ((_a = counts[serviceId]) !== null && _a !== void 0 ? _a : 0) + 1;
+            }
         });
         return counts;
     }, [publicReports]);
+    // Derived overview values
     var overview = react_1.useMemo(function () {
         var approvedScores = publicReports
             .map(function (report) { var _a; return (_a = report.summary) === null || _a === void 0 ? void 0 : _a.approvedAverageRating; })
@@ -219,6 +361,12 @@ exports.RatingsPageClient = function (_a) {
                 : null
         };
     }, [publicReports, reports, isLeadershipView]);
+    // Actions
+    var handleLeaveFeedback = react_1.useCallback(function (report) {
+        if (!report.id)
+            return;
+        setFeedbackReport(report);
+    }, []);
     var handleViewReport = react_1.useCallback(function (report) {
         setSelectedReport(report);
         setReportDialogOpen(true);
@@ -228,16 +376,20 @@ exports.RatingsPageClient = function (_a) {
         setSelectedReport(null);
     }, []);
     var handleSelectService = react_1.useCallback(function (service) {
-        var _a;
         setSelectedService(service);
-        if (typeof document !== "undefined") {
+        requestAnimationFrame(function () {
+            var _a;
             (_a = document
-                .getElementById("report-history")) === null || _a === void 0 ? void 0 : _a.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+                .getElementById("report-history")) === null || _a === void 0 ? void 0 : _a.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
     }, []);
-    var handleViewArchiveReport = react_1.useCallback(function (report) {
-        handleViewReport(report);
-    }, [handleViewReport]);
+    var handleViewChecklistReport = react_1.useCallback(function (report) {
+        // Replace with the checklist detail dialog when available.
+        console.info("Selected checklist report:", report.id);
+    }, []);
     var serviceFilteredReports = react_1.useMemo(function () {
         if (selectedService === "all")
             return visibleReports;
@@ -253,26 +405,62 @@ exports.RatingsPageClient = function (_a) {
                     report.visibility !== "public");
         });
     }, [isLeadershipView, publicReports, visibleReports]);
-    return (React.createElement("main", { className: "min-h-screen bg-[#F7F9FC]" },
-        React.createElement(Hero_1.RatingsHero, null),
-        React.createElement(Overview_1.RatingsOverview, { approvedAverageRating: overview.approvedAverageRating, servicesAssessed: overview.servicesAssessed, checklistCompletion: overview.checklistCompletionPercentage, areasForImprovement: overview.areasForImprovement, outstandingReviews: overview.outstandingReviews }),
-        loadError && (React.createElement("div", { role: "alert", className: "mx-auto my-6 max-w-7xl px-5 sm:px-8 lg:px-10" },
-            React.createElement("div", { className: "rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" },
-                React.createElement("p", { className: "font-semibold" }, "Unable to load reports"),
-                React.createElement("p", { className: "mt-1" }, loadError),
-                React.createElement("button", { type: "button", onClick: function () { return window.location.reload(); }, className: "mt-3 font-semibold underline underline-offset-4" }, "Try again")))),
-        React.createElement(ChecklistReports_1.ChecklistReports, { reports: checklistReports, loading: checklistReportsLoading, onViewReport: handleViewChecklistReport }),
-        React.createElement(ServiceReportCards_1.ServiceReportCards, { reportCounts: serviceReportCounts, onSelectService: handleSelectService }),
-        React.createElement(ReportHistory_1.ReportHistory, { reports: serviceFilteredReports, loading: isLoading, onViewReport: handleViewReport, publicOnly: !isLeadershipView, title: isLeadershipView
-                ? "Reports and review queue"
-                : "Published report history", description: isLeadershipView
-                ? "Review available reports and open individual records."
-                : "Browse approved reports made available for the church community." }),
-        selectedService !== "all" && (React.createElement("div", { className: "mx-auto -mt-8 max-w-7xl px-5 sm:px-8 lg:px-10" },
-            React.createElement("button", { type: "button", onClick: function () { return setSelectedService("all"); }, className: "min-h-10 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#0C2340] transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0]" }, "Show all services"))),
-        React.createElement(RatingBands_1.RatingBands, null),
-        React.createElement(SpecialProgrammes_1.SpecialProgrammes, null),
-        React.createElement(ReportArchive_1.ReportArchive, { reports: isLeadershipView ? leadershipReports : publicReports, loading: isLoading, onViewReport: handleViewArchiveReport, publicOnly: !isLeadershipView }),
-        isLeadershipView && (React.createElement(ReviewQueue_1.ReviewQueue, { reports: reports, loading: isLoading, onViewReport: handleViewReport })),
-        React.createElement(ratings_detail_dialog_1["default"], { report: selectedReport, open: reportDialogOpen, onClose: handleCloseReport, publicOnly: !isLeadershipView })));
+    var handleRatingsRetry = react_1.useCallback(function () {
+        setRatingsRetry(function (value) { return value + 1; });
+    }, []);
+    var handleChecklistRetry = react_1.useCallback(function () {
+        setChecklistRetry(function (value) { return value + 1; });
+    }, []);
+    // Consistent responsive spacing for alert messages
+    var alertWrapper = "mx-auto my-6 w-full max-w-7xl px-4 sm:px-6 lg:px-8";
+    return (React.createElement(React.Fragment, null,
+        React.createElement("div", { className: [
+                "relative min-h-screen transition-[filter] duration-300",
+                !isAuthenticated
+                    ? "pointer-events-none select-none blur-[11px]"
+                    : "",
+            ].join(" "), "aria-hidden": !isAuthenticated, inert: !isAuthenticated },
+            React.createElement("main", { className: "min-h-screen overflow-x-clip bg-[#F7F9FC]" },
+                React.createElement(Hero_1.RatingsHero, { serviceAssessments: assessmentsCount, publishedReports: publicReports.length, checklistCompletion: overview.checklistCompletionPercentage }),
+                React.createElement(Overview_1.RatingsOverview, { approvedAverageRating: (_b = apiMetrics === null || apiMetrics === void 0 ? void 0 : apiMetrics.approvedAverageRating) !== null && _b !== void 0 ? _b : null, servicesAssessed: (_c = apiMetrics === null || apiMetrics === void 0 ? void 0 : apiMetrics.servicesAssessed) !== null && _c !== void 0 ? _c : null, checklistCompletion: (_d = apiMetrics === null || apiMetrics === void 0 ? void 0 : apiMetrics.checklistCompletion) !== null && _d !== void 0 ? _d : null, areasForImprovement: (_e = apiMetrics === null || apiMetrics === void 0 ? void 0 : apiMetrics.areasForImprovement) !== null && _e !== void 0 ? _e : null, outstandingReviews: (_f = apiMetrics === null || apiMetrics === void 0 ? void 0 : apiMetrics.outstandingReviews) !== null && _f !== void 0 ? _f : null }),
+                loadError && (React.createElement("div", { className: alertWrapper },
+                    React.createElement("div", { role: "alert", className: "rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700" },
+                        React.createElement("p", { className: "font-semibold" }, "Unable to load reports"),
+                        React.createElement("p", { className: "mt-1 break-words" }, loadError),
+                        React.createElement("button", { type: "button", onClick: handleRatingsRetry, disabled: isLoading, className: "mt-3 inline-flex min-h-10 items-center rounded-lg font-semibold underline underline-offset-4 transition hover:text-red-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50" }, isLoading ? "Retrying..." : "Try again")))),
+                checklistLoadError && (React.createElement("div", { className: alertWrapper },
+                    React.createElement("div", { role: "alert", className: "rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700" },
+                        React.createElement("p", { className: "font-semibold" }, "Unable to load checklist reports"),
+                        React.createElement("p", { className: "mt-1 break-words" }, checklistLoadError),
+                        React.createElement("button", { type: "button", onClick: handleChecklistRetry, disabled: checklistReportsLoading, className: "mt-3 inline-flex min-h-10 items-center rounded-lg font-semibold underline underline-offset-4 transition hover:text-red-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50" }, checklistReportsLoading
+                            ? "Retrying..."
+                            : "Try again")))),
+                React.createElement(ChecklistReports_1.ChecklistReports, { reports: checklistReports, loading: checklistReportsLoading, onViewReport: handleViewChecklistReport }),
+                React.createElement(ServiceReportCards_1.ServiceReportCards, { reportCounts: serviceReportCounts, onSelectService: handleSelectService }),
+                React.createElement(ReportHistory_1.ReportHistory, { reports: serviceFilteredReports, loading: isLoading, onViewReport: handleViewReport, onLeaveFeedback: handleLeaveFeedback, publicOnly: !isLeadershipView, title: isLeadershipView
+                        ? "Reports and review queue"
+                        : "Published report history", description: isLeadershipView
+                        ? "Review available reports and open individual records."
+                        : "Browse approved reports made available for the church community." }),
+                selectedService !== "all" && (React.createElement("div", { className: "mx-auto -mt-8 w-full max-w-7xl px-4 sm:px-6 lg:px-8" },
+                    React.createElement("button", { type: "button", onClick: function () { return setSelectedService("all"); }, className: "min-h-10 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#0C2340] transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0]" }, "Show all services"))),
+                React.createElement(RatingBands_1.RatingBands, null),
+                React.createElement(SpecialProgrammes_1.SpecialProgrammes, null),
+                React.createElement(ReportArchive_1.ReportArchive, { reports: isLeadershipView
+                        ? leadershipReports
+                        : publicReports, loading: isLoading, onViewReport: handleViewReport, publicOnly: !isLeadershipView }),
+                isLeadershipView && (React.createElement(ReviewQueue_1.ReviewQueue, { reports: reports, loading: isLoading, onViewReport: handleViewReport })),
+                React.createElement(ratings_detail_dialog_1["default"], { report: selectedReport, open: reportDialogOpen, onClose: handleCloseReport, publicOnly: !isLeadershipView }))),
+        !sessionChecked && (React.createElement("div", { role: "status", "aria-live": "polite", className: "fixed inset-0 z-50 flex items-center justify-center bg-[#0C2340]/25 px-4 backdrop-blur-[2px]" },
+            React.createElement("div", { className: "flex w-full max-w-xs items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl" },
+                React.createElement("span", { "aria-hidden": "true", className: "h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-slate-200 border-t-[#00A3E0]" }),
+                React.createElement("p", { className: "text-sm font-medium text-[#0C2340]" }, "Verifying your session...")))),
+        sessionChecked && !isAuthenticated && (React.createElement("div", { "aria-hidden": "true", className: "fixed inset-0 z-40 bg-[#0C2340]/25 backdrop-blur-[2px]" })),
+        React.createElement(login_dialog_1.RatingsLoginDialog, { open: sessionChecked && !isAuthenticated, onAuthenticated: function () {
+                setIsAuthenticated(true);
+                setSessionChecked(true);
+                setLoadError(null);
+                setChecklistLoadError(null);
+            } }),
+        (feedbackReport === null || feedbackReport === void 0 ? void 0 : feedbackReport.id) && (React.createElement(feedback_dialog_1.ReportFeedbackDialog, { reportId: feedbackReport.id, reportTitle: feedbackReport.title, open: Boolean(feedbackReport), onClose: function () { return setFeedbackReport(null); } }))));
 };

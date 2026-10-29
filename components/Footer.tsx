@@ -7,7 +7,7 @@ const socialLinks = [
     href: "https://facebook.com/gharvestchurch/",
     icon: (
       <svg
-        className="h-6 w-6"
+        className="h-5 w-5"
         fill="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -21,7 +21,7 @@ const socialLinks = [
     href: "https://www.instagram.com/gharvestchurch/",
     icon: (
       <svg
-        className="h-6 w-6"
+        className="h-5 w-5"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.8"
@@ -45,7 +45,7 @@ const socialLinks = [
     href: "https://www.youtube.com/@gharvestchurch",
     icon: (
       <svg
-        className="h-6 w-6"
+        className="h-5 w-5"
         fill="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -58,25 +58,39 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 w-full py-6">
-      <div className="mx-auto w-full max-w-[1440px] px-4">
-        <div className="flex justify-end space-x-6">
-          {socialLinks.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              aria-label={item.name}
-              target="_blank"
-              className="text-gray-600 transition-colors duration-200 ease-in-out hover:text-gray-900"
-            >
-              <span className="sr-only">{item.name}</span>
-              <div className="h-6 w-6">{item.icon}</div>
-            </Link>
-          ))}
-        </div>
+    <footer className="relative z-10 w-full border-t border-slate-200/70 bg-white/70">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-7 lg:px-10">
+        <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between sm:gap-6">
+          {/* Copyright */}
+          <p className="order-2 text-center text-xs leading-6 text-slate-500 sm:order-1 sm:text-left sm:text-sm">
+            &copy; {new Date().getFullYear()} Global Harvest Church.
+            <span className="block sm:inline sm:ml-1">
+              All rights reserved.
+            </span>
+          </p>
 
-        <div className="text-center text-gray-600 transition-colors duration-200 ease-in-out hover:text-gray-900">
-          &copy; 2026 Global Harvest Church. All rights reserved.
+          {/* Social links */}
+          <nav
+            aria-label="Follow Global Harvest Church"
+            className="order-1 sm:order-2"
+          >
+            <ul className="flex items-center justify-center gap-3">
+              {socialLinks.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    aria-label={item.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition-colors duration-200 hover:bg-[#00A3E0]/10 hover:text-[#007FAF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2"
+                  >
+                    {item.icon}
+                    <span className="sr-only">{item.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
     </footer>

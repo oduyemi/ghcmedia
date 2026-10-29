@@ -13,15 +13,9 @@ import {
   SearchX,
   ShieldCheck,
   SlidersHorizontal,
+  MessageSquareText,
 } from "lucide-react";
-
-import {
-  reportTypeLabels,
-  serviceDefinitions,
-  type ReportingPeriod,
-  type ServiceReport,
-  type ServiceType,
-} from "@/data/ratings";
+import { reportTypeLabels, serviceDefinitions, type ReportingPeriod, type ServiceReport, type ServiceType } from "@/data/ratings";
 import { SectionHeading } from "@/components/assessment/ratings/shared/Heading";
 import {
   ReportFilters,
@@ -34,6 +28,7 @@ interface ReportHistoryProps {
   loading?: boolean;
   initialFilters?: Partial<ReportFilterValues>;
   onViewReport?: (report: ServiceReport) => void;
+  onLeaveFeedback?: (report: ServiceReport) => void;
   showFilters?: boolean;
   publicOnly?: boolean;
   title?: string;
@@ -59,7 +54,6 @@ function parseDate(value: string): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-/** Returns a calendar date in the church's reporting timezone. */
 function getLagosDateKey(date: Date): string {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: TIME_ZONE,
@@ -88,7 +82,6 @@ function formatDate(value: string): string {
   }).format(date);
 }
 
-/** Use UTC only for arithmetic on already-normalized YYYY-MM-DD keys. */
 function shiftDateKey(value: string, days: number): string {
   const [year, month, day] = value.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -123,17 +116,13 @@ function matchesPeriod(
   if (!date) return false;
 
   const reportKey = getLagosDateKey(date);
-
-  // Exclude future-dated reports from relative historical periods.
   if (reportKey > todayKey) return false;
-
   if (period === "this-week") {
     const [year, month, day] = todayKey.split("-").map(Number);
     const today = new Date(Date.UTC(year, month - 1, day));
     const dayOfWeek = today.getUTCDay();
     const daysSinceMonday = (dayOfWeek + 6) % 7;
     const weekStart = shiftDateKey(todayKey, -daysSinceMonday);
-
     return reportKey >= weekStart && reportKey <= todayKey;
   }
 
@@ -197,10 +186,10 @@ function ReportSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white"
+      className="min-w-0 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white"
     >
       <div className="h-1.5 animate-pulse bg-slate-200" />
-      <div className="p-5 sm:p-6">
+      <div className="p-4 sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="h-7 w-28 animate-pulse rounded-full bg-slate-100" />
           <div className="h-6 w-20 animate-pulse rounded-full bg-slate-100" />
@@ -223,6 +212,7 @@ export const ReportHistory = ({
   loading = false,
   initialFilters,
   onViewReport,
+  onLeaveFeedback,
   showFilters = true,
   publicOnly = true,
   title = "Report history",
@@ -339,7 +329,7 @@ export const ReportHistory = ({
     <section
       id="report-history"
       aria-labelledby="report-history-heading"
-      className={`relative isolate mx-auto w-full max-w-7xl overflow-hidden px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 ${className}`}
+      className={`relative isolate mx-auto w-full max-w-7xl overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10 ${className}`}
     >
       <div
         aria-hidden="true"
@@ -371,14 +361,14 @@ export const ReportHistory = ({
           className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-gradient-to-l from-[#00A3E0]/[0.12] to-transparent"
         />
 
-        <div className="relative flex flex-col gap-6 px-6 py-7 sm:px-8 sm:py-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-          <div className="max-w-2xl">
+        <div className="relative flex min-w-0 flex-col gap-6 px-4 py-6 sm:px-8 sm:py-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+          <div className="min-w-0 max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#41B6E6]/25 bg-[#41B6E6]/10 px-3.5 py-2 text-xs font-semibold text-[#8CDEFA]">
               <FileBarChart2 size={15} aria-hidden="true" />
               Media team reporting
             </span>
 
-            <h3 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h3 className="mt-4 break-words text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl">
               Every service. A record of excellence.
             </h3>
 
@@ -388,8 +378,8 @@ export const ReportHistory = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <div className="min-w-[125px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5">
+          <div className="grid min-w-0 grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:flex lg:flex-wrap">
+            <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.06] px-3 py-3.5 sm:px-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50">
                 {publicOnly ? "Published reports" : "Matching reports"}
               </p>
@@ -398,7 +388,7 @@ export const ReportHistory = ({
               </p>
             </div>
 
-            <div className="min-w-[125px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5">
+            <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.06] px-3 py-3.5 sm:px-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50">
                 Archive
               </p>
@@ -414,7 +404,7 @@ export const ReportHistory = ({
           </div>
         </div>
 
-        <div className="relative flex items-center gap-2 border-t border-white/10 bg-white/[0.035] px-6 py-3.5 text-xs leading-5 text-white/60 sm:px-8 lg:px-10">
+        <div className="relative flex items-start gap-2 border-t border-white/10 bg-white/[0.035] px-4 py-3.5 text-xs leading-5 text-white/60 sm:px-8 lg:px-10">
           <CheckCircle2
             size={15}
             className="shrink-0 text-[#41B6E6]"
@@ -456,7 +446,7 @@ export const ReportHistory = ({
             )}
           </div>
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm shadow-[#0C2340]/[0.025] sm:p-5">
+          <div className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm shadow-[#0C2340]/[0.025] sm:p-5">
             <ReportFilters
               value={activeFilters}
               onChange={setActiveFilters}
@@ -491,7 +481,7 @@ export const ReportHistory = ({
         <div
           role="status"
           aria-live="polite"
-          className="grid gap-5 md:grid-cols-2"
+          className="grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2"
         >
           <span className="sr-only">Loading reports...</span>
           {Array.from({ length: 4 }).map((_, index) => (
@@ -550,7 +540,7 @@ export const ReportHistory = ({
           )}
         </motion.div>
       ) : (
-        <div className="grid items-stretch gap-5 md:grid-cols-2 lg:gap-6">
+        <div className="grid min-w-0 items-stretch gap-4 sm:gap-5 md:grid-cols-2 lg:gap-6">
           {visibleReports.map((report, index) => {
             const score = getReportScore(report);
             const completion = getValidPercentage(
@@ -570,13 +560,13 @@ export const ReportHistory = ({
                   duration: reduceMotion ? 0 : 0.35,
                   delay: reduceMotion ? 0 : Math.min(index * 0.045, 0.2),
                 }}
-                className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(12,35,64,0.035)] transition duration-300 hover:-translate-y-1 hover:border-[#00A3E0]/40 hover:shadow-[0_18px_45px_rgba(12,35,64,0.085)]"
+                className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(12,35,64,0.035)] transition duration-300 motion-safe:hover:-translate-y-1 hover:border-[#00A3E0]/40 hover:shadow-[0_18px_45px_rgba(12,35,64,0.085)] sm:rounded-[1.5rem]"
               >
                 <div className="h-1.5 bg-gradient-to-r from-[#0C2340] via-[#00A3E0] to-[#41B6E6]" />
 
-                <div className="flex flex-1 flex-col p-5 sm:p-6">
+                <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-6">
                   {/* Report identity */}
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                     <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#D8EDF6] bg-[#EFF9FD] px-3 py-1.5 text-xs font-semibold text-[#087FAD]">
                       <FileBarChart2
                         size={14}
@@ -591,11 +581,11 @@ export const ReportHistory = ({
                     <StatusBadge status={report.status} />
                   </div>
 
-                  <h4 className="mt-5 text-lg font-bold leading-snug tracking-tight text-[#0C2340] transition-colors group-hover:text-[#087FAD] sm:text-xl">
+                  <h4 className="mt-4 break-words text-lg font-bold leading-snug tracking-tight text-[#0C2340] transition-colors group-hover:text-[#087FAD] sm:mt-5 sm:text-xl">
                     {report.title}
                   </h4>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500">
+                  <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-xs leading-5 text-slate-500 sm:gap-x-4">
                     <span className="inline-flex items-center gap-1.5">
                       <CalendarDays
                         size={14}
@@ -604,16 +594,15 @@ export const ReportHistory = ({
                       />
                       {formatDate(report.date)}
                     </span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300" />
-                    <span>{getServiceName(report.serviceType)}</span>
+                    <span className="min-w-0 break-words">{getServiceName(report.serviceType)}</span>
                   </div>
 
                   {/* Approved summary */}
-                  <div className="mt-5 rounded-2xl border border-slate-100 bg-[#F8FAFC] p-4">
+                  <div className="mt-5 min-w-0 rounded-2xl border border-slate-100 bg-[#F8FAFC] p-3.5 sm:p-4">
                     <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
                       Report overview
                     </p>
-                    <p className="mt-2 text-sm leading-7 text-slate-600">
+                    <p className="mt-2 break-words text-sm leading-6 text-slate-600 sm:leading-7">
                       {publicSummary ||
                         (isPublished
                           ? "No approved public summary is available for this report."
@@ -622,13 +611,13 @@ export const ReportHistory = ({
                   </div>
 
                   {/* Metrics */}
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="relative overflow-hidden rounded-2xl border border-[#DCECF4] bg-gradient-to-br from-[#F0F9FD] to-white p-4">
+                  <div className="mt-4 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2">
+                    <div className="relative min-w-0 overflow-hidden rounded-2xl border border-[#DCECF4] bg-gradient-to-br from-[#F0F9FD] to-white p-3.5 sm:p-4">
                       <div
                         aria-hidden="true"
                         className="absolute -right-5 -top-5 h-16 w-16 rounded-full bg-[#00A3E0]/[0.06]"
                       />
-                      <p className="relative text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-slate-500">
+                      <p className="relative text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-slate-500 sm:tracking-[0.1em]">
                         Approved average
                       </p>
                       <p className="relative mt-3 text-2xl font-bold tracking-tight text-[#0C2340]">
@@ -641,12 +630,12 @@ export const ReportHistory = ({
                       </p>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-2xl border border-[#E8EAF4] bg-gradient-to-br from-[#F5F6FF] to-white p-4">
+                    <div className="relative min-w-0 overflow-hidden rounded-2xl border border-[#E8EAF4] bg-gradient-to-br from-[#F5F6FF] to-white p-3.5 sm:p-4">
                       <div
                         aria-hidden="true"
                         className="absolute -right-5 -top-5 h-16 w-16 rounded-full bg-[#4B42F2]/[0.05]"
                       />
-                      <p className="relative text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-slate-500">
+                      <p className="relative text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-slate-500 sm:tracking-[0.1em]">
                         Checklist completion
                       </p>
                       <p className="relative mt-3 text-2xl font-bold tracking-tight text-[#0C2340]">
@@ -682,22 +671,22 @@ export const ReportHistory = ({
                             <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EAF7FC] text-[#0087BD]">
                               <CheckCircle2 size={12} aria-hidden="true" />
                             </span>
-                            <span>{highlight.title}</span>
+                            <span className="min-w-0 break-words">{highlight.title}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  {/* Visibility and action */}
+                  {/* Visibility and actions */}
                   <div className="mt-auto pt-6">
-                    <div className="flex items-center gap-2 border-t border-slate-100 pt-4">
+                    <div className="flex min-w-0 items-center gap-2 border-t border-slate-100 pt-4">
                       {report.visibility === "public" ? (
                         <>
                           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EAF8F0] text-[#07864B]">
                             <CheckCircle2 size={14} aria-hidden="true" />
                           </span>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-xs font-semibold text-[#253D56]">
                               Public report
                             </p>
@@ -711,7 +700,7 @@ export const ReportHistory = ({
                           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
                             <LockKeyhole size={14} aria-hidden="true" />
                           </span>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-xs font-semibold text-[#253D56]">
                               Restricted report
                             </p>
@@ -737,11 +726,26 @@ export const ReportHistory = ({
                         />
                       </button>
                     ) : (
-                      <div className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-400">
+                      <div className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-3 text-center text-sm text-slate-400 sm:px-4">
                         <FileSearch size={16} aria-hidden="true" />
                         Report details unavailable
                       </div>
                     )}
+
+                    {publicOnly &&
+                      isPublished &&
+                      report.visibility === "public" &&
+                      onLeaveFeedback &&
+                      report.id && (
+                        <button
+                          type="button"
+                          onClick={() => onLeaveFeedback(report)}
+                          className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#CFE8F3] bg-[#F0F9FD] px-4 py-3 text-sm font-semibold text-[#087FAD] transition hover:border-[#00A3E0]/50 hover:bg-[#E5F5FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2"
+                        >
+                          <MessageSquareText size={17} aria-hidden="true" />
+                          Leave feedback
+                        </button>
+                      )}
                   </div>
                 </div>
               </motion.article>
@@ -751,12 +755,12 @@ export const ReportHistory = ({
       )}
 
       {!loading && visibleReports.length > 0 && (
-        <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mt-8 flex min-w-0 flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-start gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F0F9FD] text-[#0087BD]">
               <Search size={17} aria-hidden="true" />
             </span>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm font-semibold text-[#0C2340]">
                 Looking for another report?
               </p>

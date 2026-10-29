@@ -1,4 +1,3 @@
-
 "use client";
 import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -177,7 +176,7 @@ export const ReportArchive = ({
     <section
       id="report-archive"
       aria-labelledby="report-archive-heading"
-      className={`relative isolate overflow-hidden py-16 sm:py-20 lg:py-24 ${className}`}
+      className={`relative isolate overflow-hidden py-12 sm:py-16 lg:py-24 ${className}`}
     >
       <div
         aria-hidden="true"
@@ -192,9 +191,9 @@ export const ReportArchive = ({
         className="pointer-events-none absolute -left-24 bottom-10 -z-10 h-72 w-72 rounded-full bg-[#7651C9]/[0.06] blur-3xl"
       />
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
             <SectionHeading
               eyebrow="The record of our services"
               title="Good work deserves to be remembered."
@@ -202,19 +201,23 @@ export const ReportArchive = ({
             />
           </div>
 
-          <div className="flex w-fit items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E7F7FC] text-[#0087BD]">
+          <div className="flex w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm sm:w-fit">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E7F7FC] text-[#0087BD]">
               <Archive size={21} aria-hidden="true" />
             </span>
-            <div>
+
+            <div className="min-w-0">
               <p className="text-xl font-black tracking-tight text-[#0C2340]">
-                {loading ? "—" : reports.filter((report) =>
-                  !publicOnly ||
-                  (report.status === "published" &&
-                    report.visibility === "public"),
-                ).length}
+                {loading
+                  ? "—"
+                  : reports.filter(
+                      (report) =>
+                        !publicOnly ||
+                        (report.status === "published" &&
+                          report.visibility === "public"),
+                    ).length}
               </p>
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs leading-5 font-medium text-slate-500">
                 Available archive records
               </p>
             </div>
@@ -237,7 +240,7 @@ export const ReportArchive = ({
             </div>
           </div>
 
-          <div className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-6">
+          <div className="grid min-w-0 gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-6">
             <div>
               <label
                 htmlFor="archive-search"
@@ -259,8 +262,7 @@ export const ReportArchive = ({
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Try a service name or report topic..."
-                  className="min-h-12 w-full rounded-xl border border-slate-200 bg-[#F8FAFC] py-3 pl-11 pr-4 text-sm text-[#0C2340] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#00A3E0] focus:bg-white focus:ring-4 focus:ring-[#00A3E0]/10"
-                />
+                  className="min-h-12 w-full min-w-0 rounded-xl border border-slate-200 bg-[#F8FAFC] py-3 pl-11 pr-3 text-sm text-[#0C2340] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#00A3E0] focus:bg-white focus:ring-4 focus:ring-[#00A3E0]/10 sm:pr-4"                />
               </div>
             </div>
 
@@ -283,8 +285,7 @@ export const ReportArchive = ({
                   id="archive-year"
                   value={selectedYear}
                   onChange={(event) => setSelectedYear(event.target.value)}
-                  className="min-h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium text-[#0C2340] outline-none transition hover:border-slate-300 focus:border-[#00A3E0] focus:ring-4 focus:ring-[#00A3E0]/10"
-                >
+                  className="min-h-12 w-full min-w-0 appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium text-[#0C2340] outline-none transition hover:border-slate-300 focus:border-[#00A3E0] focus:ring-4 focus:ring-[#00A3E0]/10"                >
                   <option value="all">All years</option>
                   {yearOptions.map((year) => (
                     <option key={year} value={year}>
@@ -424,8 +425,7 @@ export const ReportArchive = ({
                     onClick={() => toggleYear(group.year)}
                     aria-expanded={isExpanded}
                     aria-controls={`archive-year-${group.year.replace(/[^a-zA-Z0-9]/g, "-")}`}
-                    className="flex min-h-[88px] w-full items-center justify-between gap-4 px-4 py-4 text-left transition hover:bg-[#FAFCFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A3E0] sm:px-6"
-                  >
+                    className="flex min-h-[84px] w-full items-center justify-between gap-3 px-3 py-4 text-left transition hover:bg-[#FAFCFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A3E0] sm:gap-4 sm:px-6"                  >
                     <span className="flex min-w-0 items-center gap-3 sm:gap-4">
                       <span
                         className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition ${

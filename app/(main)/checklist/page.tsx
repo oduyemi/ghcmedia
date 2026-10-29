@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ChecklistHero, ChecklistExplorer, Commitment } from "@/components/checklist";
 
+
 export const metadata: Metadata = {
   title: "Service Checklists & Reports | Global Harvest Church",
   description:
@@ -13,14 +14,18 @@ export const metadata: Metadata = {
 
 export default function ChecklistPage() {
   return (
-    <main className="min-h-screen bg-[#F7F9FC]">
+    <main className="min-h-screen overflow-x-clip bg-[#F7F9FC]">
       <ChecklistHero />
-      <div className="mx-auto max-w-7xl space-y-14 px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+
+      <div className="mx-auto w-full max-w-7xl space-y-10 px-4 py-8 sm:space-y-12 sm:px-6 sm:py-12 lg:space-y-14 lg:px-8 lg:py-16">
         <ChecklistExplorer />
       </div>
-      <div className="border-t border-slate-200 pt-10 sm:pt-14">
+
+      <div className="border-t border-slate-200">
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
           <Commitment />
         </div>
+      </div>
     </main>
   );
 }

@@ -42,13 +42,25 @@ var db_1 = require("@/utils/db");
 var serviceReport_model_1 = require("@/models/serviceReport.model");
 var assessment_model_1 = require("@/models/assessment.model");
 var reporting_1 = require("@/utils/reporting");
+function average(values) {
+    var validValues = values.filter(function (value) {
+        return typeof value === "number" &&
+            Number.isFinite(value) &&
+            value >= 0 &&
+            value <= 100;
+    });
+    if (validValues.length === 0)
+        return null;
+    return (validValues.reduce(function (sum, value) { return sum + value; }, 0) /
+        validValues.length);
+}
 function GET() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, user, forbidden, reports_1, assessments, reports, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var _a, user, forbidden, reports_1, metrics_1, _b, approvedAssessments, outstandingReviews, reports, metrics, error_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _b.trys.push([0, 7, , 8]);
+                    _c.trys.push([0, 6, , 7]);
                     return [4 /*yield*/, reporting_1.authorize([
                             "admin",
                             "member",
@@ -56,45 +68,75 @@ function GET() {
                             "other",
                         ])];
                 case 1:
-                    _a = _b.sent(), user = _a.user, forbidden = _a.forbidden;
+                    _a = _c.sent(), user = _a.user, forbidden = _a.forbidden;
                     if (forbidden)
                         return [2 /*return*/, forbidden];
+                    if (!user) {
+                        return [2 /*return*/, server_1.NextResponse.json({ error: "Authentication required." }, { status: 401 })];
+                    }
                     return [4 /*yield*/, db_1.dbConnect()];
                 case 2:
-                    _b.sent();
+                    _c.sent();
                     if (!(user.role === "pastor" || user.role === "other")) return [3 /*break*/, 4];
                     return [4 /*yield*/, serviceReport_model_1["default"].find({
                             status: "PUBLISHED",
                             visibility: "PUBLIC"
                         })
-                            .select("title reportType serviceType date approvedPublicSummary highlights summary publishedAt")
+                            .select("title reportType serviceType serviceOccurrenceId date status visibility summary approvedPublicSummary highlights publishedAt")
                             .sort({ publishedAt: -1 })
                             .lean()];
                 case 3:
-                    reports_1 = _b.sent();
-                    return [2 /*return*/, server_1.NextResponse.json({ reports: reports_1 })];
-                case 4: return [4 /*yield*/, assessment_model_1["default"].find({
-                        status: "APPROVED"
-                    })
-                        .select("kind subjectUserId assessorUserId serviceOccurrenceId cameraPosition totalScore maximumScore percentage ratingBand submittedAt reviewedAt")
-                        .sort({ reviewedAt: -1 })
-                        .lean()];
-                case 5:
-                    assessments = _b.sent();
-                    return [4 /*yield*/, serviceReport_model_1["default"].find({
+                    reports_1 = _c.sent();
+                    metrics_1 = {
+                        approvedAverageRating: average(reports_1.map(function (report) { var _a; return (_a = report.summary) === null || _a === void 0 ? void 0 : _a.approvedAverageRating; })),
+                        servicesAssessed: new Set(reports_1
+                            .map(function (report) { var _a; return (_a = report.serviceOccurrenceId) === null || _a === void 0 ? void 0 : _a.toString(); })
+                            .filter(function (id) { return Boolean(id); })).size,
+                        checklistCompletion: average(reports_1.map(function (report) { var _a; return (_a = report.summary) === null || _a === void 0 ? void 0 : _a.checklistCompletionPercentage; })),
+                        areasForImprovement: null,
+                        outstandingReviews: null,
+                        assessmentsCount: null
+                    };
+                    return [2 /*return*/, server_1.NextResponse.json({ reports: reports_1, metrics: metrics_1 })];
+                case 4: return [4 /*yield*/, Promise.all([
+                        assessment_model_1["default"].find({ status: "APPROVED" })
+                            .select("percentage serviceOccurrenceId areasForImprovement")
+                            .lean(),
+                        assessment_model_1["default"].countDocuments({
+                            status: { $in: ["SUBMITTED", "PENDING_REVIEW"] }
+                        }),
+                        serviceReport_model_1["default"].find({
                             status: { $in: ["APPROVED", "PUBLISHED"] }
                         })
-                            .select("title reportType serviceType date status visibility summary approvedPublicSummary highlights publishedAt")
+                            .select("title reportType serviceType serviceOccurrenceId date status visibility summary approvedPublicSummary highlights publishedAt")
                             .sort({ date: -1 })
-                            .lean()];
+                            .lean(),
+                    ])];
+                case 5:
+                    _b = _c.sent(), approvedAssessments = _b[0], outstandingReviews = _b[1], reports = _b[2];
+                    metrics = {
+                        approvedAverageRating: average(approvedAssessments.map(function (assessment) { return assessment.percentage; })),
+                        servicesAssessed: new Set(approvedAssessments
+                            .map(function (assessment) { var _a; return (_a = assessment.serviceOccurrenceId) === null || _a === void 0 ? void 0 : _a.toString(); })
+                            .filter(function (id) { return Boolean(id); })).size,
+                        checklistCompletion: average(reports.map(function (report) { var _a; return (_a = report.summary) === null || _a === void 0 ? void 0 : _a.checklistCompletionPercentage; })),
+                        areasForImprovement: approvedAssessments.filter(function (assessment) {
+                            return typeof assessment.areasForImprovement === "string" &&
+                                assessment.areasForImprovement.trim().length > 0;
+                        }).length,
+                        outstandingReviews: outstandingReviews,
+                        assessmentsCount: approvedAssessments.length
+                    };
+                    return [2 /*return*/, server_1.NextResponse.json({
+                            reports: reports,
+                            assessments: approvedAssessments,
+                            metrics: metrics
+                        })];
                 case 6:
-                    reports = _b.sent();
-                    return [2 /*return*/, server_1.NextResponse.json({ assessments: assessments, reports: reports })];
-                case 7:
-                    error_1 = _b.sent();
+                    error_1 = _c.sent();
                     console.error("GET RATINGS ERROR:", error_1);
                     return [2 /*return*/, server_1.NextResponse.json({ error: "Unable to load ratings." }, { status: 500 })];
-                case 8: return [2 /*return*/];
+                case 7: return [2 /*return*/];
             }
         });
     });

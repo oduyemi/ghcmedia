@@ -41,7 +41,6 @@ function parseDate(value) {
     var date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date;
 }
-/** Returns a calendar date in the church's reporting timezone. */
 function getLagosDateKey(date) {
     var parts = new Intl.DateTimeFormat("en-CA", {
         timeZone: TIME_ZONE,
@@ -66,7 +65,6 @@ function formatDate(value) {
         timeZone: TIME_ZONE
     }).format(date);
 }
-/** Use UTC only for arithmetic on already-normalized YYYY-MM-DD keys. */
 function shiftDateKey(value, days) {
     var _a = value.split("-").map(Number), year = _a[0], month = _a[1], day = _a[2];
     var date = new Date(Date.UTC(year, month - 1, day));
@@ -90,7 +88,6 @@ function matchesPeriod(report, period, todayKey) {
     if (!date)
         return false;
     var reportKey = getLagosDateKey(date);
-    // Exclude future-dated reports from relative historical periods.
     if (reportKey > todayKey)
         return false;
     if (period === "this-week") {
@@ -143,9 +140,9 @@ function hasActiveFilters(filters) {
         filters.period !== "all");
 }
 function ReportSkeleton() {
-    return (React.createElement("div", { "aria-hidden": "true", className: "overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white" },
+    return (React.createElement("div", { "aria-hidden": "true", className: "min-w-0 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white" },
         React.createElement("div", { className: "h-1.5 animate-pulse bg-slate-200" }),
-        React.createElement("div", { className: "p-5 sm:p-6" },
+        React.createElement("div", { className: "p-4 sm:p-6" },
             React.createElement("div", { className: "flex items-center justify-between gap-3" },
                 React.createElement("div", { className: "h-7 w-28 animate-pulse rounded-full bg-slate-100" }),
                 React.createElement("div", { className: "h-6 w-20 animate-pulse rounded-full bg-slate-100" })),
@@ -158,7 +155,7 @@ function ReportSkeleton() {
             React.createElement("div", { className: "mt-6 h-11 animate-pulse rounded-xl bg-slate-100" }))));
 }
 exports.ReportHistory = function (_a) {
-    var _b = _a.reports, reports = _b === void 0 ? [] : _b, _c = _a.loading, loading = _c === void 0 ? false : _c, initialFilters = _a.initialFilters, onViewReport = _a.onViewReport, _d = _a.showFilters, showFilters = _d === void 0 ? true : _d, _e = _a.publicOnly, publicOnly = _e === void 0 ? true : _e, _f = _a.title, title = _f === void 0 ? "Report history" : _f, _g = _a.description, description = _g === void 0 ? "Explore published service reports, revisit important moments, and review documented outcomes over time." : _g, _h = _a.className, className = _h === void 0 ? "" : _h;
+    var _b = _a.reports, reports = _b === void 0 ? [] : _b, _c = _a.loading, loading = _c === void 0 ? false : _c, initialFilters = _a.initialFilters, onViewReport = _a.onViewReport, onLeaveFeedback = _a.onLeaveFeedback, _d = _a.showFilters, showFilters = _d === void 0 ? true : _d, _e = _a.publicOnly, publicOnly = _e === void 0 ? true : _e, _f = _a.title, title = _f === void 0 ? "Report history" : _f, _g = _a.description, description = _g === void 0 ? "Explore published service reports, revisit important moments, and review documented outcomes over time." : _g, _h = _a.className, className = _h === void 0 ? "" : _h;
     var shouldReduceMotion = framer_motion_1.useReducedMotion();
     var reduceMotion = shouldReduceMotion !== null && shouldReduceMotion !== void 0 ? shouldReduceMotion : false;
     var defaultFilters = react_1.useMemo(function () { return (__assign(__assign({}, initialFilterValues), initialFilters)); }, [initialFilters]);
@@ -229,7 +226,7 @@ exports.ReportHistory = function (_a) {
         loading,
         search,
     ]);
-    return (React.createElement("section", { id: "report-history", "aria-labelledby": "report-history-heading", className: "relative isolate mx-auto w-full max-w-7xl overflow-hidden px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 " + className },
+    return (React.createElement("section", { id: "report-history", "aria-labelledby": "report-history-heading", className: "relative isolate mx-auto w-full max-w-7xl overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10 " + className },
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-28 top-20 -z-10 h-80 w-80 rounded-full bg-[#41B6E6]/[0.07] blur-3xl" }),
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -left-28 bottom-12 -z-10 h-72 w-72 rounded-full bg-[#FFC72C]/[0.055] blur-3xl" }),
         React.createElement(Heading_1.SectionHeading, { eyebrow: "The service archive", title: title, description: description }),
@@ -237,23 +234,23 @@ exports.ReportHistory = function (_a) {
             React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-12 -top-24 h-72 w-72 rounded-full border border-white/[0.08]" }),
             React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-1 -top-14 h-52 w-52 rounded-full border border-white/[0.08]" }),
             React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-gradient-to-l from-[#00A3E0]/[0.12] to-transparent" }),
-            React.createElement("div", { className: "relative flex flex-col gap-6 px-6 py-7 sm:px-8 sm:py-8 lg:flex-row lg:items-center lg:justify-between lg:px-10" },
-                React.createElement("div", { className: "max-w-2xl" },
+            React.createElement("div", { className: "relative flex min-w-0 flex-col gap-6 px-4 py-6 sm:px-8 sm:py-8 lg:flex-row lg:items-center lg:justify-between lg:px-10" },
+                React.createElement("div", { className: "min-w-0 max-w-2xl" },
                     React.createElement("span", { className: "inline-flex items-center gap-2 rounded-full border border-[#41B6E6]/25 bg-[#41B6E6]/10 px-3.5 py-2 text-xs font-semibold text-[#8CDEFA]" },
                         React.createElement(lucide_react_1.FileBarChart2, { size: 15, "aria-hidden": "true" }),
                         "Media team reporting"),
-                    React.createElement("h3", { className: "mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl" }, "Every service. A record of excellence."),
+                    React.createElement("h3", { className: "mt-4 break-words text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl" }, "Every service. A record of excellence."),
                     React.createElement("p", { className: "mt-3 max-w-xl text-sm leading-7 text-white/65" }, "Find published reports, revisit service highlights, and review available performance data in one place.")),
-                React.createElement("div", { className: "flex flex-wrap gap-3" },
-                    React.createElement("div", { className: "min-w-[125px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5" },
+                React.createElement("div", { className: "grid min-w-0 grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:flex lg:flex-wrap" },
+                    React.createElement("div", { className: "min-w-0 rounded-2xl border border-white/10 bg-white/[0.06] px-3 py-3.5 sm:px-4" },
                         React.createElement("p", { className: "text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50" }, publicOnly ? "Published reports" : "Matching reports"),
                         React.createElement("p", { className: "mt-2 text-2xl font-bold tabular-nums text-white" }, loading ? "—" : visibleReports.length)),
-                    React.createElement("div", { className: "min-w-[125px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5" },
+                    React.createElement("div", { className: "min-w-0 rounded-2xl border border-white/10 bg-white/[0.06] px-3 py-3.5 sm:px-4" },
                         React.createElement("p", { className: "text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50" }, "Archive"),
                         React.createElement("p", { className: "mt-2 flex items-center gap-2 text-sm font-semibold text-white" },
                             React.createElement(lucide_react_1.ShieldCheck, { size: 17, className: "text-[#41B6E6]", "aria-hidden": "true" }),
                             publicOnly ? "Public view" : "Report records")))),
-            React.createElement("div", { className: "relative flex items-center gap-2 border-t border-white/10 bg-white/[0.035] px-6 py-3.5 text-xs leading-5 text-white/60 sm:px-8 lg:px-10" },
+            React.createElement("div", { className: "relative flex items-start gap-2 border-t border-white/10 bg-white/[0.035] px-4 py-3.5 text-xs leading-5 text-white/60 sm:px-8 lg:px-10" },
                 React.createElement(lucide_react_1.CheckCircle2, { size: 15, className: "shrink-0 text-[#41B6E6]", "aria-hidden": "true" }),
                 publicOnly
                     ? "Only published reports approved for public viewing are shown."
@@ -269,7 +266,7 @@ exports.ReportHistory = function (_a) {
                 filtersActive && (React.createElement("button", { type: "button", onClick: resetFilters, className: "inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold text-[#087FAD] transition hover:bg-[#EAF7FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },
                     "Reset filters",
                     React.createElement(lucide_react_1.ArrowRight, { size: 14, "aria-hidden": "true" })))),
-            React.createElement("div", { className: "rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm shadow-[#0C2340]/[0.025] sm:p-5" },
+            React.createElement("div", { className: "min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm shadow-[#0C2340]/[0.025] sm:p-5" },
                 React.createElement(ReportFilters_1.ReportFilters, { value: activeFilters, onChange: setActiveFilters, onReset: resetFilters, resultCount: visibleReports.length, showStatusFilter: !publicOnly })))),
         React.createElement("div", { className: "mb-5 mt-10 flex flex-wrap items-end justify-between gap-3" },
             React.createElement("div", null,
@@ -279,7 +276,7 @@ exports.ReportHistory = function (_a) {
                 visibleReports.length,
                 " ",
                 visibleReports.length === 1 ? "report" : "reports"))),
-        loading || todayKey === null ? (React.createElement("div", { role: "status", "aria-live": "polite", className: "grid gap-5 md:grid-cols-2" },
+        loading || todayKey === null ? (React.createElement("div", { role: "status", "aria-live": "polite", className: "grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2" },
             React.createElement("span", { className: "sr-only" }, "Loading reports..."),
             Array.from({ length: 4 }).map(function (_, index) { return (React.createElement(ReportSkeleton, { key: index })); }))) : visibleReports.length === 0 ? (React.createElement(framer_motion_1.motion.div, { initial: reduceMotion ? false : { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.15 }, transition: { duration: reduceMotion ? 0 : 0.35 }, className: "relative overflow-hidden rounded-[1.75rem] border border-dashed border-[#C8DCE8] bg-white px-6 py-14 text-center sm:px-10 sm:py-16" },
             React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full border border-[#00A3E0]/10" }),
@@ -297,7 +294,7 @@ exports.ReportHistory = function (_a) {
                     : "There are currently no reports available under these visibility and publication rules."),
             filtersActive && (React.createElement("button", { type: "button", onClick: resetFilters, className: "relative mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#0C2340] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16395F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },
                 "Clear filters",
-                React.createElement(lucide_react_1.ArrowRight, { size: 16, "aria-hidden": "true" }))))) : (React.createElement("div", { className: "grid items-stretch gap-5 md:grid-cols-2 lg:gap-6" }, visibleReports.map(function (report, index) {
+                React.createElement(lucide_react_1.ArrowRight, { size: 16, "aria-hidden": "true" }))))) : (React.createElement("div", { className: "grid min-w-0 items-stretch gap-4 sm:gap-5 md:grid-cols-2 lg:gap-6" }, visibleReports.map(function (report, index) {
             var _a, _b, _c, _d;
             var score = getReportScore(report);
             var completion = getValidPercentage((_a = report.summary) === null || _a === void 0 ? void 0 : _a.checklistCompletionPercentage);
@@ -307,38 +304,37 @@ exports.ReportHistory = function (_a) {
             return (React.createElement(framer_motion_1.motion.article, { key: report.id, initial: reduceMotion ? false : { opacity: 0, y: 16 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.1 }, transition: {
                     duration: reduceMotion ? 0 : 0.35,
                     delay: reduceMotion ? 0 : Math.min(index * 0.045, 0.2)
-                }, className: "group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(12,35,64,0.035)] transition duration-300 hover:-translate-y-1 hover:border-[#00A3E0]/40 hover:shadow-[0_18px_45px_rgba(12,35,64,0.085)]" },
+                }, className: "group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(12,35,64,0.035)] transition duration-300 motion-safe:hover:-translate-y-1 hover:border-[#00A3E0]/40 hover:shadow-[0_18px_45px_rgba(12,35,64,0.085)] sm:rounded-[1.5rem]" },
                 React.createElement("div", { className: "h-1.5 bg-gradient-to-r from-[#0C2340] via-[#00A3E0] to-[#41B6E6]" }),
-                React.createElement("div", { className: "flex flex-1 flex-col p-5 sm:p-6" },
-                    React.createElement("div", { className: "flex flex-wrap items-center justify-between gap-3" },
+                React.createElement("div", { className: "flex min-w-0 flex-1 flex-col p-4 sm:p-6" },
+                    React.createElement("div", { className: "flex min-w-0 flex-wrap items-center justify-between gap-2.5 sm:gap-3" },
                         React.createElement("span", { className: "inline-flex max-w-full items-center gap-2 rounded-full border border-[#D8EDF6] bg-[#EFF9FD] px-3 py-1.5 text-xs font-semibold text-[#087FAD]" },
                             React.createElement(lucide_react_1.FileBarChart2, { size: 14, className: "shrink-0", "aria-hidden": "true" }),
                             React.createElement("span", { className: "truncate" }, reportType !== null && reportType !== void 0 ? reportType : "Service report")),
                         React.createElement(StatusBadge_1.StatusBadge, { status: report.status })),
-                    React.createElement("h4", { className: "mt-5 text-lg font-bold leading-snug tracking-tight text-[#0C2340] transition-colors group-hover:text-[#087FAD] sm:text-xl" }, report.title),
-                    React.createElement("div", { className: "mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500" },
+                    React.createElement("h4", { className: "mt-4 break-words text-lg font-bold leading-snug tracking-tight text-[#0C2340] transition-colors group-hover:text-[#087FAD] sm:mt-5 sm:text-xl" }, report.title),
+                    React.createElement("div", { className: "mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-xs leading-5 text-slate-500 sm:gap-x-4" },
                         React.createElement("span", { className: "inline-flex items-center gap-1.5" },
                             React.createElement(lucide_react_1.CalendarDays, { size: 14, className: "shrink-0 text-[#0087BD]", "aria-hidden": "true" }),
                             formatDate(report.date)),
-                        React.createElement("span", { className: "h-1 w-1 rounded-full bg-slate-300" }),
-                        React.createElement("span", null, getServiceName(report.serviceType))),
-                    React.createElement("div", { className: "mt-5 rounded-2xl border border-slate-100 bg-[#F8FAFC] p-4" },
+                        React.createElement("span", { className: "min-w-0 break-words" }, getServiceName(report.serviceType))),
+                    React.createElement("div", { className: "mt-5 min-w-0 rounded-2xl border border-slate-100 bg-[#F8FAFC] p-3.5 sm:p-4" },
                         React.createElement("p", { className: "text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400" }, "Report overview"),
-                        React.createElement("p", { className: "mt-2 text-sm leading-7 text-slate-600" }, publicSummary ||
+                        React.createElement("p", { className: "mt-2 break-words text-sm leading-6 text-slate-600 sm:leading-7" }, publicSummary ||
                             (isPublished
                                 ? "No approved public summary is available for this report."
                                 : "This report has not been published for public viewing."))),
-                    React.createElement("div", { className: "mt-4 grid grid-cols-2 gap-3" },
-                        React.createElement("div", { className: "relative overflow-hidden rounded-2xl border border-[#DCECF4] bg-gradient-to-br from-[#F0F9FD] to-white p-4" },
+                    React.createElement("div", { className: "mt-4 grid grid-cols-1 gap-3 min-[390px]:grid-cols-2" },
+                        React.createElement("div", { className: "relative min-w-0 overflow-hidden rounded-2xl border border-[#DCECF4] bg-gradient-to-br from-[#F0F9FD] to-white p-3.5 sm:p-4" },
                             React.createElement("div", { "aria-hidden": "true", className: "absolute -right-5 -top-5 h-16 w-16 rounded-full bg-[#00A3E0]/[0.06]" }),
-                            React.createElement("p", { className: "relative text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-slate-500" }, "Approved average"),
+                            React.createElement("p", { className: "relative text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-slate-500 sm:tracking-[0.1em]" }, "Approved average"),
                             React.createElement("p", { className: "relative mt-3 text-2xl font-bold tracking-tight text-[#0C2340]" }, score !== null && score !== void 0 ? score : "—"),
                             React.createElement("p", { className: "relative mt-1 text-[10px] text-slate-500" }, score !== null
                                 ? "Approved rating"
                                 : "No verified score")),
-                        React.createElement("div", { className: "relative overflow-hidden rounded-2xl border border-[#E8EAF4] bg-gradient-to-br from-[#F5F6FF] to-white p-4" },
+                        React.createElement("div", { className: "relative min-w-0 overflow-hidden rounded-2xl border border-[#E8EAF4] bg-gradient-to-br from-[#F5F6FF] to-white p-3.5 sm:p-4" },
                             React.createElement("div", { "aria-hidden": "true", className: "absolute -right-5 -top-5 h-16 w-16 rounded-full bg-[#4B42F2]/[0.05]" }),
-                            React.createElement("p", { className: "relative text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-slate-500" }, "Checklist completion"),
+                            React.createElement("p", { className: "relative text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-slate-500 sm:tracking-[0.1em]" }, "Checklist completion"),
                             React.createElement("p", { className: "relative mt-3 text-2xl font-bold tracking-tight text-[#0C2340]" }, completion !== null && completion !== void 0 ? completion : "—"),
                             React.createElement("p", { className: "relative mt-1 text-[10px] text-slate-500" }, completion !== null
                                 ? "Recorded completion"
@@ -354,30 +350,37 @@ exports.ReportHistory = function (_a) {
                         React.createElement("ul", { className: "mt-3 space-y-3" }, report.highlights.slice(0, 3).map(function (highlight) { return (React.createElement("li", { key: highlight.id, className: "flex items-start gap-3 text-sm leading-6 text-slate-600" },
                             React.createElement("span", { className: "mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EAF7FC] text-[#0087BD]" },
                                 React.createElement(lucide_react_1.CheckCircle2, { size: 12, "aria-hidden": "true" })),
-                            React.createElement("span", null, highlight.title))); })))),
+                            React.createElement("span", { className: "min-w-0 break-words" }, highlight.title))); })))),
                     React.createElement("div", { className: "mt-auto pt-6" },
-                        React.createElement("div", { className: "flex items-center gap-2 border-t border-slate-100 pt-4" }, report.visibility === "public" ? (React.createElement(React.Fragment, null,
+                        React.createElement("div", { className: "flex min-w-0 items-center gap-2 border-t border-slate-100 pt-4" }, report.visibility === "public" ? (React.createElement(React.Fragment, null,
                             React.createElement("span", { className: "flex h-7 w-7 items-center justify-center rounded-lg bg-[#EAF8F0] text-[#07864B]" },
                                 React.createElement(lucide_react_1.CheckCircle2, { size: 14, "aria-hidden": "true" })),
-                            React.createElement("div", null,
+                            React.createElement("div", { className: "min-w-0" },
                                 React.createElement("p", { className: "text-xs font-semibold text-[#253D56]" }, "Public report"),
                                 React.createElement("p", { className: "mt-0.5 text-[10px] text-slate-400" }, "Approved for public viewing")))) : (React.createElement(React.Fragment, null,
                             React.createElement("span", { className: "flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500" },
                                 React.createElement(lucide_react_1.LockKeyhole, { size: 14, "aria-hidden": "true" })),
-                            React.createElement("div", null,
+                            React.createElement("div", { className: "min-w-0" },
                                 React.createElement("p", { className: "text-xs font-semibold text-[#253D56]" }, "Restricted report"),
                                 React.createElement("p", { className: "mt-0.5 text-[10px] text-slate-400" }, "Access may be limited"))))),
                         onViewReport ? (React.createElement("button", { type: "button", onClick: function () { return onViewReport(report); }, className: "mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0C2340] px-4 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[#16395F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },
                             "View full report",
-                            React.createElement(lucide_react_1.ArrowUpRight, { size: 17, "aria-hidden": "true", className: "transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" }))) : (React.createElement("div", { className: "mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-400" },
+                            React.createElement(lucide_react_1.ArrowUpRight, { size: 17, "aria-hidden": "true", className: "transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" }))) : (React.createElement("div", { className: "mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-3 text-center text-sm text-slate-400 sm:px-4" },
                             React.createElement(lucide_react_1.FileSearch, { size: 16, "aria-hidden": "true" }),
-                            "Report details unavailable"))))));
+                            "Report details unavailable")),
+                        publicOnly &&
+                            isPublished &&
+                            report.visibility === "public" &&
+                            onLeaveFeedback &&
+                            report.id && (React.createElement("button", { type: "button", onClick: function () { return onLeaveFeedback(report); }, className: "mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#CFE8F3] bg-[#F0F9FD] px-4 py-3 text-sm font-semibold text-[#087FAD] transition hover:border-[#00A3E0]/50 hover:bg-[#E5F5FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },
+                            React.createElement(lucide_react_1.MessageSquareText, { size: 17, "aria-hidden": "true" }),
+                            "Leave feedback"))))));
         }))),
-        !loading && visibleReports.length > 0 && (React.createElement("div", { className: "mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6" },
+        !loading && visibleReports.length > 0 && (React.createElement("div", { className: "mt-8 flex min-w-0 flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6" },
             React.createElement("div", { className: "flex items-start gap-3" },
                 React.createElement("span", { className: "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F0F9FD] text-[#0087BD]" },
                     React.createElement(lucide_react_1.Search, { size: 17, "aria-hidden": "true" })),
-                React.createElement("div", null,
+                React.createElement("div", { className: "min-w-0" },
                     React.createElement("p", { className: "text-sm font-semibold text-[#0C2340]" }, "Looking for another report?"),
                     React.createElement("p", { className: "mt-1 text-xs leading-5 text-slate-500" }, "Use the archive filters to narrow results by service, report type, status, or reporting period."))),
             filtersActive && showFilters && (React.createElement("button", { type: "button", onClick: resetFilters, className: "inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-[#0C2340] transition hover:border-[#00A3E0]/40 hover:bg-[#F0F9FD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },

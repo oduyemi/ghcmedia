@@ -518,7 +518,7 @@ export const ChecklistReports= ({
           )}
         </div>
 
-        <p className="mt-6 text-xs leading-6 text-slate-400">
+        <p className="mt-6 text-xs leading-6 text-slate-400 text-center">
           Completion excludes items marked not applicable. Missing answers
           are not automatically treated as zero, and checklist completion
           is separate from camera assessment ratings.

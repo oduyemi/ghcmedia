@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.POST = void 0;
+exports.POST = exports.GET = void 0;
 var server_1 = require("next/server");
 var mongoose_1 = require("mongoose");
 var db_1 = require("@/utils/db");
@@ -46,10 +46,118 @@ var checklistSubmission_model_1 = require("@/models/checklistSubmission.model");
 var notification_model_1 = require("@/models/notification.model");
 var reporting_1 = require("@/utils/reporting");
 var emailLogic_1 = require("@/helper/emailLogic");
+function GET() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, user, forbidden, filter, submissions, reports, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 4, , 5]);
+                    return [4 /*yield*/, reporting_1.authorize([
+                            "member",
+                            "admin",
+                            "pastor",
+                            "leader",
+                        ])];
+                case 1:
+                    _a = _b.sent(), user = _a.user, forbidden = _a.forbidden;
+                    if (forbidden)
+                        return [2 /*return*/, forbidden];
+                    if (!user) {
+                        return [2 /*return*/, server_1.NextResponse.json({ error: "Authentication required." }, { status: 401 })];
+                    }
+                    return [4 /*yield*/, db_1.dbConnect()];
+                case 2:
+                    _b.sent();
+                    filter = user.role === "member"
+                        ? { submittedBy: user._id }
+                        : {};
+                    return [4 /*yield*/, checklistSubmission_model_1["default"].find(filter)
+                            .sort({ submittedAt: -1, createdAt: -1 })
+                            .populate({
+                            path: "serviceOccurrenceId",
+                            select: "serviceType serviceDateKey startsAt title status specialProgrammeId",
+                            populate: {
+                                path: "specialProgrammeId",
+                                select: "title"
+                            }
+                        })
+                            .populate({
+                            path: "templateId",
+                            select: "name version"
+                        })
+                            .populate({
+                            path: "submittedBy",
+                            select: "fname lname"
+                        })
+                            .populate({
+                            path: "reviewedBy",
+                            select: "fname lname"
+                        })
+                            .lean()];
+                case 3:
+                    submissions = _b.sent();
+                    reports = submissions.map(function (submission) {
+                        var _a, _b, _c, _d, _e;
+                        var occurrence = submission.serviceOccurrenceId;
+                        var template = submission.templateId;
+                        var submitter = submission.submittedBy;
+                        var reviewer = submission.reviewedBy;
+                        var serviceType = (_a = occurrence === null || occurrence === void 0 ? void 0 : occurrence.serviceType) !== null && _a !== void 0 ? _a : "Service";
+                        var programmeTitle = (_c = (_b = occurrence === null || occurrence === void 0 ? void 0 : occurrence.specialProgrammeId) === null || _b === void 0 ? void 0 : _b.title) === null || _c === void 0 ? void 0 : _c.trim();
+                        var serviceName = programmeTitle || ((_d = occurrence === null || occurrence === void 0 ? void 0 : occurrence.title) === null || _d === void 0 ? void 0 : _d.trim()) ||
+                            serviceType
+                                .replaceAll("_", " ")
+                                .toLowerCase()
+                                .replace(/\b\w/g, function (character) { return character.toUpperCase(); });
+                        var completedItems = submission.items.filter(function (item) { return item.status === "COMPLETED"; }).length;
+                        var applicableItems = submission.items.filter(function (item) { return item.status !== "NOT_APPLICABLE"; }).length;
+                        var status = (function () {
+                            switch (submission.submissionStatus) {
+                                case "APPROVED":
+                                    return "approved";
+                                case "REJECTED":
+                                    return "reviewed";
+                                case "SUBMITTED":
+                                case "PENDING_REVIEW":
+                                default:
+                                    return "submitted";
+                            }
+                        })();
+                        return {
+                            id: String(submission._id),
+                            title: (template === null || template === void 0 ? void 0 : template.name) || serviceName + " checklist",
+                            serviceName: serviceName,
+                            date: (occurrence === null || occurrence === void 0 ? void 0 : occurrence.startsAt) instanceof Date
+                                ? occurrence.startsAt.toISOString()
+                                : (occurrence === null || occurrence === void 0 ? void 0 : occurrence.serviceDateKey) || ((_e = submission.submittedAt) === null || _e === void 0 ? void 0 : _e.toISOString()) ||
+                                    submission.createdAt.toISOString(),
+                            status: status,
+                            completedItems: completedItems,
+                            applicableItems: applicableItems,
+                            submittedBy: [submitter === null || submitter === void 0 ? void 0 : submitter.fname, submitter === null || submitter === void 0 ? void 0 : submitter.lname]
+                                .filter(Boolean)
+                                .join(" ") || undefined,
+                            reviewedBy: [reviewer === null || reviewer === void 0 ? void 0 : reviewer.fname, reviewer === null || reviewer === void 0 ? void 0 : reviewer.lname]
+                                .filter(Boolean)
+                                .join(" ") || undefined
+                        };
+                    });
+                    return [2 /*return*/, server_1.NextResponse.json({ reports: reports })];
+                case 4:
+                    error_1 = _b.sent();
+                    console.error("GET CHECKLISTS ERROR:", error_1);
+                    return [2 /*return*/, server_1.NextResponse.json({ error: "Unable to load checklist reports." }, { status: 500 })];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.GET = GET;
 function POST(request) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var _b, user_1, forbidden, body, occurrence_1, template, templateItems, allowedItems, seen_1, items, _i, _c, submitted, source, statuses, missingRequired, submission_1, admins, eventTime_1, error_1;
+        var _b, user_1, forbidden, body, occurrence_1, template, templateItems, allowedItems, seen_1, items, _i, _c, submitted, source, statuses, missingRequired, submission_1, admins, eventTime_1, error_2;
         var _this = this;
         return __generator(this, function (_d) {
             switch (_d.label) {
@@ -177,11 +285,11 @@ function POST(request) {
                     _d.sent();
                     return [2 /*return*/, server_1.NextResponse.json({ message: "Checklist submitted for review.", submission: submission_1 }, { status: 201 })];
                 case 9:
-                    error_1 = _d.sent();
-                    if (error_1 && typeof error_1 === "object" && "code" in error_1 && error_1.code === 11000) {
+                    error_2 = _d.sent();
+                    if (error_2 && typeof error_2 === "object" && "code" in error_2 && error_2.code === 11000) {
                         return [2 /*return*/, server_1.NextResponse.json({ error: "A checklist has already been submitted by you for this service." }, { status: 409 })];
                     }
-                    console.error("SUBMIT CHECKLIST ERROR:", error_1);
+                    console.error("SUBMIT CHECKLIST ERROR:", error_2);
                     return [2 /*return*/, server_1.NextResponse.json({ error: "Unable to submit checklist." }, { status: 500 })];
                 case 10: return [2 /*return*/];
             }

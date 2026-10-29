@@ -124,24 +124,26 @@ exports.ReportArchive = function (_a) {
         setSearch("");
         setSelectedYear("all");
     };
-    return (React.createElement("section", { id: "report-archive", "aria-labelledby": "report-archive-heading", className: "relative isolate overflow-hidden py-16 sm:py-20 lg:py-24 " + className },
+    return (React.createElement("section", { id: "report-archive", "aria-labelledby": "report-archive-heading", className: "relative isolate overflow-hidden py-12 sm:py-16 lg:py-24 " + className },
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-white via-[#F7F9FC] to-white" }),
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -right-24 top-24 -z-10 h-72 w-72 rounded-full bg-[#41B6E6]/10 blur-3xl" }),
         React.createElement("div", { "aria-hidden": "true", className: "pointer-events-none absolute -left-24 bottom-10 -z-10 h-72 w-72 rounded-full bg-[#7651C9]/[0.06] blur-3xl" }),
-        React.createElement("div", { className: "mx-auto max-w-7xl px-5 sm:px-8 lg:px-10" },
-            React.createElement("div", { className: "flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between" },
-                React.createElement("div", { className: "max-w-3xl" },
+        React.createElement("div", { className: "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10" },
+            React.createElement("div", { className: "flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between" },
+                React.createElement("div", { className: "min-w-0 max-w-3xl" },
                     React.createElement(Heading_1.SectionHeading, { eyebrow: "The record of our services", title: "Good work deserves to be remembered.", description: "Explore previous reports, revisit service assessments, and discover published highlights from our media team." })),
-                React.createElement("div", { className: "flex w-fit items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm" },
-                    React.createElement("span", { className: "flex h-11 w-11 items-center justify-center rounded-xl bg-[#E7F7FC] text-[#0087BD]" },
+                React.createElement("div", { className: "flex w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm sm:w-fit" },
+                    React.createElement("span", { className: "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E7F7FC] text-[#0087BD]" },
                         React.createElement(lucide_react_1.Archive, { size: 21, "aria-hidden": "true" })),
-                    React.createElement("div", null,
-                        React.createElement("p", { className: "text-xl font-black tracking-tight text-[#0C2340]" }, loading ? "—" : reports.filter(function (report) {
-                            return !publicOnly ||
-                                (report.status === "published" &&
-                                    report.visibility === "public");
-                        }).length),
-                        React.createElement("p", { className: "text-xs font-medium text-slate-500" }, "Available archive records")))),
+                    React.createElement("div", { className: "min-w-0" },
+                        React.createElement("p", { className: "text-xl font-black tracking-tight text-[#0C2340]" }, loading
+                            ? "—"
+                            : reports.filter(function (report) {
+                                return !publicOnly ||
+                                    (report.status === "published" &&
+                                        report.visibility === "public");
+                            }).length),
+                        React.createElement("p", { className: "text-xs leading-5 font-medium text-slate-500" }, "Available archive records")))),
             React.createElement("div", { className: "mt-10 overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_8px_35px_rgba(12,35,64,0.045)]" },
                 React.createElement("div", { className: "flex items-center gap-3 border-b border-slate-100 px-5 py-4 sm:px-6" },
                     React.createElement("span", { className: "flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0F9FD] text-[#0087BD]" },
@@ -149,17 +151,17 @@ exports.ReportArchive = function (_a) {
                     React.createElement("div", null,
                         React.createElement("h3", { className: "text-sm font-extrabold text-[#0C2340]" }, "Find a report"),
                         React.createElement("p", { className: "mt-0.5 text-xs text-slate-500" }, "Search by title, service, report type, or topic."))),
-                React.createElement("div", { className: "grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-6" },
+                React.createElement("div", { className: "grid min-w-0 gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-6" },
                     React.createElement("div", null,
                         React.createElement("label", { htmlFor: "archive-search", className: "mb-2 block text-xs font-bold text-slate-600" }, "Search archive"),
                         React.createElement("div", { className: "relative" },
                             React.createElement(lucide_react_1.Search, { size: 18, className: "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400", "aria-hidden": "true" }),
-                            React.createElement("input", { id: "archive-search", type: "search", value: search, onChange: function (event) { return setSearch(event.target.value); }, placeholder: "Try a service name or report topic...", className: "min-h-12 w-full rounded-xl border border-slate-200 bg-[#F8FAFC] py-3 pl-11 pr-4 text-sm text-[#0C2340] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#00A3E0] focus:bg-white focus:ring-4 focus:ring-[#00A3E0]/10" }))),
+                            React.createElement("input", { id: "archive-search", type: "search", value: search, onChange: function (event) { return setSearch(event.target.value); }, placeholder: "Try a service name or report topic...", className: "min-h-12 w-full min-w-0 rounded-xl border border-slate-200 bg-[#F8FAFC] py-3 pl-11 pr-3 text-sm text-[#0C2340] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#00A3E0] focus:bg-white focus:ring-4 focus:ring-[#00A3E0]/10 sm:pr-4" }))),
                     React.createElement("div", null,
                         React.createElement("label", { htmlFor: "archive-year", className: "mb-2 block text-xs font-bold text-slate-600" }, "Reporting year"),
                         React.createElement("div", { className: "relative" },
                             React.createElement(lucide_react_1.CalendarDays, { size: 17, className: "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400", "aria-hidden": "true" }),
-                            React.createElement("select", { id: "archive-year", value: selectedYear, onChange: function (event) { return setSelectedYear(event.target.value); }, className: "min-h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium text-[#0C2340] outline-none transition hover:border-slate-300 focus:border-[#00A3E0] focus:ring-4 focus:ring-[#00A3E0]/10" },
+                            React.createElement("select", { id: "archive-year", value: selectedYear, onChange: function (event) { return setSelectedYear(event.target.value); }, className: "min-h-12 w-full min-w-0 appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-10 text-sm font-medium text-[#0C2340] outline-none transition hover:border-slate-300 focus:border-[#00A3E0] focus:ring-4 focus:ring-[#00A3E0]/10" },
                                 React.createElement("option", { value: "all" }, "All years"),
                                 yearOptions.map(function (year) { return (React.createElement("option", { key: year, value: year }, year === "Undated" ? "Date unavailable" : year)); })),
                             React.createElement(lucide_react_1.ChevronDown, { size: 16, className: "pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400", "aria-hidden": "true" })))),
@@ -202,7 +204,7 @@ exports.ReportArchive = function (_a) {
                     }, className: "overflow-hidden rounded-[1.5rem] border bg-white transition duration-300 " + (isExpanded
                         ? "border-[#CFEAF5] shadow-[0_12px_40px_rgba(12,35,64,0.055)]"
                         : "border-slate-200/80 shadow-sm hover:border-slate-300") },
-                    React.createElement("button", { type: "button", onClick: function () { return toggleYear(group.year); }, "aria-expanded": isExpanded, "aria-controls": "archive-year-" + group.year.replace(/[^a-zA-Z0-9]/g, "-"), className: "flex min-h-[88px] w-full items-center justify-between gap-4 px-4 py-4 text-left transition hover:bg-[#FAFCFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A3E0] sm:px-6" },
+                    React.createElement("button", { type: "button", onClick: function () { return toggleYear(group.year); }, "aria-expanded": isExpanded, "aria-controls": "archive-year-" + group.year.replace(/[^a-zA-Z0-9]/g, "-"), className: "flex min-h-[84px] w-full items-center justify-between gap-3 px-3 py-4 text-left transition hover:bg-[#FAFCFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A3E0] sm:gap-4 sm:px-6" },
                         React.createElement("span", { className: "flex min-w-0 items-center gap-3 sm:gap-4" },
                             React.createElement("span", { className: "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition " + (isExpanded
                                     ? "bg-[#0C2340] text-white"

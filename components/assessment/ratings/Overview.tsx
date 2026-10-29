@@ -273,7 +273,7 @@ export const RatingsOverview = ({
   return (
     <section
       aria-labelledby="ratings-overview-title"
-      className="relative isolate overflow-hidden bg-[#F8FAFD] py-16 sm:py-20 lg:py-24"
+      className="relative isolate overflow-hidden bg-[#F8FAFD] py-12 sm:py-16 lg:py-24"
     >
       <div
         aria-hidden="true"
@@ -284,7 +284,7 @@ export const RatingsOverview = ({
         className="pointer-events-none absolute -bottom-40 -left-32 -z-10 h-96 w-96 rounded-full bg-[#E8DDFF]/35 blur-3xl"
       />
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="grid items-end gap-7 lg:grid-cols-[1fr_auto] lg:gap-12">
           <div className="max-w-3xl">
             <div id="ratings-overview-title">
@@ -318,7 +318,7 @@ export const RatingsOverview = ({
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6 xl:gap-4">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-5">
           {metrics.map((metric, index) => {
             const Icon = metric.icon;
             const theme = metric.theme as MetricTheme;
@@ -341,9 +341,11 @@ export const RatingsOverview = ({
                   ease,
                 }}
                 className={[
-                  "group relative isolate flex min-h-[285px] flex-col overflow-hidden rounded-[1.75rem] border p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_48px_rgba(12,35,64,0.11)] sm:min-h-[285px] sm:p-6",
+                  "group relative isolate flex min-h-[280px] min-w-0 flex-col overflow-hidden rounded-[1.5rem] border p-5",
+                  "transition-[transform,box-shadow] duration-300 sm:rounded-[1.75rem] sm:p-6",
+                  "motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_22px_48px_rgba(12,35,64,0.11)]",
                   featured
-                    ? "min-h-[330px] border-[#164A76] bg-[#0C2340] text-white shadow-[0_14px_35px_rgba(12,35,64,0.16)] sm:col-span-2 sm:min-h-[330px] sm:p-7 xl:col-span-2"
+                    ? "min-h-[310px] border-[#164A76] bg-[#0C2340] text-white shadow-[0_14px_35px_rgba(12,35,64,0.16)] sm:col-span-2 sm:min-h-[320px] xl:col-span-2"
                     : `${style.card} xl:col-span-1`,
                 ].join(" ")}
               >
@@ -387,37 +389,35 @@ export const RatingsOverview = ({
                 </div>
 
                 <div className="relative z-10 mt-7">
-                  <p
-                    className={[
-                      "font-black leading-none tracking-[-0.065em]",
-                      featured
-                        ? "text-5xl sm:text-6xl"
-                        : "text-4xl sm:text-[2.65rem]",
-                      featured ? "text-white" : "text-[#0C2340]",
-                    ].join(" ")}
-                  >
-                    {formatMetric(value, metric.suffix)}
-                  </p>
+                <p
+                  className={[
+                    "break-words font-black leading-none tracking-[-0.055em] tabular-nums",
+                    featured
+                      ? "text-4xl sm:text-5xl lg:text-6xl"
+                      : "text-3xl sm:text-4xl",
+                    featured ? "text-white" : "text-[#0C2340]",
+                  ].join(" ")}
+                >
+                  {formatMetric(value, metric.suffix)}
+                </p>
 
-                  <h3
-                    className={[
-                      "mt-4 text-sm font-extrabold leading-5",
-                      featured ? "text-white" : style.label,
-                    ].join(" ")}
-                  >
-                    {metric.label}
-                  </h3>
+                <h3
+                  className={[
+                    "mt-4 text-sm font-extrabold leading-6 [overflow-wrap:anywhere]",
+                    featured ? "text-white" : style.label,
+                  ].join(" ")}
+                >
+                  {metric.label}
+                </h3>
 
-                  <p
-                    className={[
-                      "mt-2 max-w-[22rem] text-xs leading-5",
-                      featured ? "text-slate-300" : "text-slate-500",
-                    ].join(" ")}
-                  >
-                    {available
-                      ? metric.description
-                      : metric.emptyDescription}
-                  </p>
+                <p
+                  className={[
+                    "mt-2 max-w-[22rem] text-xs leading-5 [overflow-wrap:anywhere]",
+                    featured ? "text-slate-300" : "text-slate-500",
+                  ].join(" ")}
+                >
+                  {available ? metric.description : metric.emptyDescription}
+                </p>
                 </div>
 
                 <DecorativeArtwork
@@ -472,16 +472,18 @@ export const RatingsOverview = ({
               <Info className="h-5 w-5" aria-hidden="true" />
             </span>
 
-            <div className="flex-1">
-              <p className="text-sm leading-6 text-slate-600">
-                <span className="font-extrabold text-[#0C2340]">
-                  A note on the numbers.
-                </span>{" "}
-                An unavailable metric is not zero. Ratings remain unavailable
-                until the relevant scoring and approval policy is established.
-                Figures should come from verified records when the reporting
-                API is connected.
-              </p>
+            <div className="mt-7 overflow-hidden rounded-2xl border border-[#BFE8FA] bg-gradient-to-r from-[#EAF9FF] via-white to-[#F1F7FF] sm:rounded-[1.5rem]">
+              <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-6">
+                <p className="text-sm leading-6 text-slate-600">
+                  <span className="font-extrabold text-[#0C2340]">
+                    A note on the numbers.
+                  </span>{" "}
+                  An unavailable metric is not zero. Ratings remain unavailable
+                  until the relevant scoring and approval policy is established.
+                  Figures should come from verified records when the reporting
+                  API is connected.
+                </p>
+              </div>
             </div>
 
             <div className="hidden shrink-0 border-l border-[#BFE8FA] pl-5 sm:block">
