@@ -1,6 +1,8 @@
+"use client";
 "use strict";
 exports.__esModule = true;
 var link_1 = require("next/link");
+var react_1 = require("react");
 var socialLinks = [
     {
         name: "Facebook",
@@ -24,14 +26,18 @@ var socialLinks = [
     },
 ];
 function Footer() {
+    var _a = react_1.useState(2026), year = _a[0], setYear = _a[1];
+    react_1.useEffect(function () {
+        setYear(new Date().getFullYear());
+    }, []);
     return (React.createElement("footer", { className: "relative z-10 w-full border-t border-slate-200/70 bg-white/70" },
         React.createElement("div", { className: "mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-7 lg:px-10" },
             React.createElement("div", { className: "flex flex-col items-center gap-5 sm:flex-row sm:justify-between sm:gap-6" },
                 React.createElement("p", { className: "order-2 text-center text-xs leading-6 text-slate-500 sm:order-1 sm:text-left sm:text-sm" },
                     "\u00A9 ",
-                    new Date().getFullYear(),
+                    year,
                     " Global Harvest Church.",
-                    React.createElement("span", { className: "block sm:inline sm:ml-1" }, "All rights reserved.")),
+                    React.createElement("span", { className: "block sm:ml-1 sm:inline" }, "All rights reserved.")),
                 React.createElement("nav", { "aria-label": "Follow Global Harvest Church", className: "order-1 sm:order-2" },
                     React.createElement("ul", { className: "flex items-center justify-center gap-3" }, socialLinks.map(function (item) { return (React.createElement("li", { key: item.name },
                         React.createElement(link_1["default"], { href: item.href, "aria-label": item.name, target: "_blank", rel: "noopener noreferrer", className: "flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition-colors duration-200 hover:bg-[#00A3E0]/10 hover:text-[#007FAF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A3E0] focus-visible:ring-offset-2" },

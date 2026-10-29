@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { dbConnect } from "@/utils/db";
 import ServiceReport from "@/models/serviceReport.model";
 import Assessment from "@/models/assessment.model";
@@ -22,7 +22,8 @@ function average(values: Array<number | null | undefined>): number | null {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  await connection();
   try {
     const { user, forbidden } = await authorize([
       "admin",

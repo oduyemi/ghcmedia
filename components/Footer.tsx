@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 
 const socialLinks = [
@@ -57,19 +59,23 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const [year, setYear] = useState(2026);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="relative z-10 w-full border-t border-slate-200/70 bg-white/70">
       <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-7 lg:px-10">
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between sm:gap-6">
-          {/* Copyright */}
           <p className="order-2 text-center text-xs leading-6 text-slate-500 sm:order-1 sm:text-left sm:text-sm">
-            &copy; {new Date().getFullYear()} Global Harvest Church.
-            <span className="block sm:inline sm:ml-1">
+            &copy; {year} Global Harvest Church.
+            <span className="block sm:ml-1 sm:inline">
               All rights reserved.
             </span>
           </p>
 
-          {/* Social links */}
           <nav
             aria-label="Follow Global Harvest Church"
             className="order-1 sm:order-2"
