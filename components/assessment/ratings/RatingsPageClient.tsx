@@ -1,16 +1,18 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
-import { developmentReports, type ServiceReport, type ServiceType } from "@/data/ratings";
-import {RatingsHero} from "@/components/assessment/ratings/Hero";
-import {RatingsOverview} from "@/components/assessment/ratings/Overview";
-import {ServiceReportCards} from "@/components/assessment/ratings/ServiceReportCards";
-import {ReportHistory} from "@/components/assessment/ratings/ReportHistory";
-import {ReportArchive} from "@/components/assessment/ratings/ReportArchive";
-import {RatingBands} from "@/components/assessment/ratings/RatingBands";
-import {SpecialProgrammes} from "@/components/assessment/ratings/SpecialProgrammes";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { type ServiceReport, type ServiceType } from "@/data/ratings";
+import { RatingsHero } from "@/components/assessment/ratings/Hero";
+import { RatingsOverview } from "@/components/assessment/ratings/Overview";
+import { ServiceReportCards } from "@/components/assessment/ratings/ServiceReportCards";
+import { ReportHistory } from "@/components/assessment/ratings/ReportHistory";
+import { ReportArchive } from "@/components/assessment/ratings/ReportArchive";
+import { RatingBands } from "@/components/assessment/ratings/RatingBands";
+import { SpecialProgrammes } from "@/components/assessment/ratings/SpecialProgrammes";
 import ReportDetailDialog from "@/dialogs/ratings-detail-dialog";
-import {ReviewQueue} from "./ReviewQueue";
+import { ReviewQueue } from "./ReviewQueue";
 import { ChecklistReports, type ChecklistReport } from "@/components/assessment/ratings/ChecklistReports";
+
+
 
 interface RatingsPageClientProps {
   reports?: ServiceReport[];
@@ -18,30 +20,156 @@ interface RatingsPageClientProps {
   isLeadershipView?: boolean;
 }
 
+interface RatingsApiReport {
+  _id?: string;
+  id?: string;
+  title: string;
+  reportType?: string;
+  serviceType?: string | null;
+  date: string | Date;
+  status?: string;
+  visibility?: string;
+  summary?: {
+    approvedAverageRating?: number | null;
+    checklistCompletionPercentage?: number | null;
+    completedAssessments?: number;
+    pendingAssessments?: number;
+  };
+  approvedPublicSummary?: string;
+  highlights?: Array<{
+    highlightId?: string;
+    title: string;
+    description: string;
+    category?: string;
+  }>;
+  publishedAt?: string | Date | null;
+}
+
+interface RatingsApiResponse {
+  reports?: RatingsApiReport[];
+  error?: string;
+}
+
+const normalizeStatus = (status?: string): string => {
+  switch (status?.toUpperCase()) {
+    case "PUBLISHED":
+      return "published";
+    case "APPROVED":
+      return "approved";
+    case "PENDING_REVIEW":
+      return "pending-review";
+    case "DRAFT":
+      return "draft";
+    default:
+      return status?.toLowerCase() ?? "";
+  }
+};
+
+const normalizeVisibility = (visibility?: string): string => {
+  return visibility?.toLowerCase() ?? "";
+};
+
+const normalizeReport = (report: RatingsApiReport): ServiceReport => {
+  return {
+    ...report,
+    id: report.id ?? report._id,
+    status: normalizeStatus(report.status),
+    visibility: normalizeVisibility(report.visibility),
+  } as unknown as ServiceReport;
+};
+
 export const RatingsPageClient = ({
-  reports = developmentReports,
-  loading = false,
+  reports: initialReports,
+  loading: initialLoading,
   isLeadershipView = false,
 }: RatingsPageClientProps) => {
-    const [selectedReport, setSelectedReport] = useState<ServiceReport | null>(null);
-    const [reportDialogOpen, setReportDialogOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState<ServiceType | "all">("all");
-  
-    const checklistReports: ChecklistReport[] = [];
-    const checklistReportsLoading = false;
+  const [apiReports, setApiReports] = useState<ServiceReport[]>(
+    initialReports ?? [],
+  );
+  const [isLoading, setIsLoading] = useState(
+    initialLoading ?? !initialReports,
+  );
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-    const handleViewChecklistReport = useCallback(
+  const [selectedReport, setSelectedReport] =
+    useState<ServiceReport | null>(null);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] =
+    useState<ServiceType | "all">("all");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadReports = async () => {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const response = await fetch("/api/ratings", {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+          signal: controller.signal,
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const data = (await response.json()) as RatingsApiResponse;
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ?? "Unable to load ratings and reports.",
+          );
+        }
+
+        const normalizedReports = (data.reports ?? []).map(normalizeReport);
+
+        setApiReports(normalizedReports);
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+
+        console.error("Unable to load ratings:", error);
+
+        setLoadError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load ratings and reports.",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadReports();
+
+    return () => controller.abort();
+  }, []);
+
+  // Only use development fixtures when they are explicitly supplied by a
+  // development-only parent. Production API failures must not show fake data.
+  const reports = apiReports;
+
+  const checklistReports: ChecklistReport[] = [];
+  const checklistReportsLoading = false;
+
+  const handleViewChecklistReport = useCallback(
     (report: ChecklistReport) => {
-        // Connect this to a checklist report detail dialog when available.
-        console.info("Selected checklist report:", report.id);
+      // Connect this to a checklist report detail dialog when available.
+      console.info("Selected checklist report:", report.id);
     },
     [],
-    );
-
+  );
 
   const visibleReports = useMemo(() => {
     return reports.filter((report) => {
-      if (isLeadershipView) return true;
+      if (isLeadershipView) {
+        return true;
+      }
 
       return (
         report.status === "published" &&
@@ -75,7 +203,7 @@ export const RatingsPageClient = ({
 
   const overview = useMemo(() => {
     const approvedScores = publicReports
-      .map((report) => report.summary.approvedAverageRating)
+      .map((report) => report.summary?.approvedAverageRating)
       .filter(
         (score): score is number =>
           typeof score === "number" &&
@@ -85,7 +213,7 @@ export const RatingsPageClient = ({
       );
 
     const completionValues = publicReports
-      .map((report) => report.summary.checklistCompletionPercentage)
+      .map((report) => report.summary?.checklistCompletionPercentage)
       .filter(
         (value): value is number =>
           typeof value === "number" &&
@@ -180,13 +308,30 @@ export const RatingsPageClient = ({
         outstandingReviews={overview.outstandingReviews}
       />
 
-      
-    
-    <ChecklistReports
+      {loadError && (
+        <div
+          role="alert"
+          className="mx-auto my-6 max-w-7xl px-5 sm:px-8 lg:px-10"
+        >
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p className="font-semibold">Unable to load reports</p>
+            <p className="mt-1">{loadError}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-3 font-semibold underline underline-offset-4"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ChecklistReports
         reports={checklistReports}
         loading={checklistReportsLoading}
         onViewReport={handleViewChecklistReport}
-    />
+      />
 
       <ServiceReportCards
         reportCounts={serviceReportCounts}
@@ -195,7 +340,7 @@ export const RatingsPageClient = ({
 
       <ReportHistory
         reports={serviceFilteredReports}
-        loading={loading}
+        loading={isLoading}
         onViewReport={handleViewReport}
         publicOnly={!isLeadershipView}
         title={
@@ -228,18 +373,18 @@ export const RatingsPageClient = ({
 
       <ReportArchive
         reports={isLeadershipView ? leadershipReports : publicReports}
-        loading={loading}
+        loading={isLoading}
         onViewReport={handleViewArchiveReport}
         publicOnly={!isLeadershipView}
       />
 
-        {isLeadershipView && (
+      {isLeadershipView && (
         <ReviewQueue
-            reports={reports}
-            loading={loading}
-            onViewReport={handleViewReport}
+          reports={reports}
+          loading={isLoading}
+          onViewReport={handleViewReport}
         />
-        )}
+      )}
 
       <ReportDetailDialog
         report={selectedReport}
@@ -249,4 +394,4 @@ export const RatingsPageClient = ({
       />
     </main>
   );
-}
+};

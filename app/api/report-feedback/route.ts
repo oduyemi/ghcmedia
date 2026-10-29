@@ -7,8 +7,6 @@ import ServiceReport from "@/models/serviceReport.model";
 import Notification from "@/models/notification.model";
 import User from "@/models/user.model";
 
-export const runtime = "nodejs";
-
 const ALLOWED_ROLES = ["pastor", "other"] as const;
 const OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
 

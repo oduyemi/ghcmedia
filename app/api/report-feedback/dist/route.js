@@ -43,7 +43,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 exports.__esModule = true;
-exports.POST = exports.runtime = void 0;
+exports.POST = void 0;
 var server_1 = require("next/server");
 var mongoose_1 = require("mongoose");
 var db_1 = require("@/utils/db");
@@ -52,7 +52,6 @@ var reportFeedback_model_1 = require("@/models/reportFeedback.model");
 var serviceReport_model_1 = require("@/models/serviceReport.model");
 var notification_model_1 = require("@/models/notification.model");
 var user_model_1 = require("@/models/user.model");
-exports.runtime = "nodejs";
 var ALLOWED_ROLES = ["pastor", "other"];
 var OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
 function POST(req) {

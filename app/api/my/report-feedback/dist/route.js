@@ -43,12 +43,11 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 exports.__esModule = true;
-exports.GET = exports.runtime = void 0;
+exports.GET = void 0;
 var server_1 = require("next/server");
 var db_1 = require("@/utils/db");
 var auth_1 = require("@/utils/auth");
 var reportFeedback_model_1 = require("@/models/reportFeedback.model");
-exports.runtime = "nodejs";
 var ALLOWED_ROLES = ["admin", "member", "pastor", "other"];
 function GET(req) {
     var _a, _b;

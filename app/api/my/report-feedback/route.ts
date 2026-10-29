@@ -3,9 +3,10 @@ import { dbConnect } from "@/utils/db";
 import { getCurrentUser, requireRole } from "@/utils/auth";
 import ReportFeedback from "@/models/reportFeedback.model";
 
-export const runtime = "nodejs";
 
 const ALLOWED_ROLES = ["admin", "member", "pastor", "other"] as const;
+
+
 
 export async function GET(req: NextRequest) {
   try {

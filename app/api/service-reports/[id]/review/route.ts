@@ -11,9 +11,7 @@ export async function PATCH(request: Request, { params }: Context) {
   try {
     const { user, forbidden } = await authorize(["admin"]);
     if (forbidden) return forbidden;
-
     await dbConnect();
-
     const { id } = await params;
     if (!mongoose.isValidObjectId(id)) {
       return NextResponse.json({ error: "Invalid report ID." }, { status: 400 });

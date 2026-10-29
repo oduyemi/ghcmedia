@@ -5,8 +5,6 @@ import { getCurrentUser, requireRole } from "@/utils/auth";
 import ReportFeedback from "@/models/reportFeedback.model";
 import ServiceReport from "@/models/serviceReport.model";
 
-export const runtime = "nodejs";
-
 type RouteContext = {
   params: Promise<{ id: string }>;
 };

@@ -4,8 +4,6 @@ import ReportFeedback from "@/models/reportFeedback.model";
 import ServiceReport from "@/models/serviceReport.model";
 import { getCurrentUser, requireRole } from "@/utils/auth";
 
-export const runtime = "nodejs";
-
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
@@ -16,10 +14,7 @@ export async function GET(
 ) {
   try {
     await dbConnect();
-
-    // 1. Authenticate the requester.
     const user = await getCurrentUser();
-
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required." },

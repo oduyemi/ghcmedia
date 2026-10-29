@@ -5,13 +5,14 @@ import { getCurrentUser, requireRole } from "@/utils/auth";
 import ReportFeedback from "@/models/reportFeedback.model";
 import Notification from "@/models/notification.model";
 
-export const runtime = "nodejs";
+
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
 const OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
+
 
 export async function PATCH(
   req: NextRequest,
