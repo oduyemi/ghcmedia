@@ -99,15 +99,12 @@ export const RatingsLoginDialog = ({
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
-        // Keep the dialog open until a session has been established.
         if (!nextOpen && !open) return;
       }}
     >
       <DialogContent
+        showCloseButton={false}
         className="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl sm:rounded-3xl"
-        onInteractOutside={(event) => event.preventDefault()}
-        onEscapeKeyDown={(event) => event.preventDefault()}
-        hideCloseButton
       >
         <div className="overflow-hidden rounded-2xl sm:rounded-3xl">
           <div className="bg-[#0C2340] px-6 py-8 text-white sm:px-8">

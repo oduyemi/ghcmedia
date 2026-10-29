@@ -57,7 +57,7 @@ function GET() {
                             "member",
                             "admin",
                             "pastor",
-                            "leader",
+                            "other",
                         ])];
                 case 1:
                     _a = _b.sent(), user = _a.user, forbidden = _a.forbidden;
@@ -110,8 +110,9 @@ function GET() {
                                 .replaceAll("_", " ")
                                 .toLowerCase()
                                 .replace(/\b\w/g, function (character) { return character.toUpperCase(); });
-                        var completedItems = submission.items.filter(function (item) { return item.status === "COMPLETED"; }).length;
-                        var applicableItems = submission.items.filter(function (item) { return item.status !== "NOT_APPLICABLE"; }).length;
+                        var checklistItems = submission.items;
+                        var completedItems = checklistItems.filter(function (item) { return item.status === "COMPLETED"; }).length;
+                        var applicableItems = checklistItems.filter(function (item) { return item.status !== "NOT_APPLICABLE"; }).length;
                         var status = (function () {
                             switch (submission.submissionStatus) {
                                 case "APPROVED":

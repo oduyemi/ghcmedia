@@ -116,11 +116,10 @@ exports.RatingsLoginDialog = function (_a) {
         });
     }); };
     return (React.createElement(dialog_1.Dialog, { open: open, onOpenChange: function (nextOpen) {
-            // Keep the dialog open until a session has been established.
             if (!nextOpen && !open)
                 return;
         } },
-        React.createElement(dialog_1.DialogContent, { className: "w-[calc(100%-2rem)] max-w-md rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl sm:rounded-3xl", onInteractOutside: function (event) { return event.preventDefault(); }, onEscapeKeyDown: function (event) { return event.preventDefault(); }, hideCloseButton: true },
+        React.createElement(dialog_1.DialogContent, { showCloseButton: false, className: "w-[calc(100%-2rem)] max-w-md rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl sm:rounded-3xl" },
             React.createElement("div", { className: "overflow-hidden rounded-2xl sm:rounded-3xl" },
                 React.createElement("div", { className: "bg-[#0C2340] px-6 py-8 text-white sm:px-8" },
                     React.createElement("div", { className: "mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#00A3E0]/15 text-[#41B6E6]" },

@@ -1,5 +1,4 @@
 "use client";
-
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -11,10 +10,10 @@ import {
   Star,
 } from "lucide-react";
 import type { ReactNode } from "react";
-
-import type { SpecialProgramme } from "@/data/ratings";
+import type { ReportStatus, SpecialProgramme } from "@/data/ratings";
 import { SectionHeading } from "@/components/assessment/ratings/shared/Heading";
 import { StatusBadge } from "@/components/assessment/ratings/shared/StatusBadge";
+
 
 interface SpecialProgrammesProps {
   programmes?: SpecialProgramme[];
@@ -104,6 +103,19 @@ function ProgrammeDetail({
       </div>
     </div>
   );
+}
+
+function toReportStatus(
+  status: SpecialProgramme["status"],
+): ReportStatus {
+  switch (status) {
+    case "pending_review":
+      return "pending-review";
+    case "draft":
+    case "approved":
+    case "published":
+      return status;
+  }
 }
 
 function ProgrammeSkeleton() {
@@ -481,7 +493,7 @@ export const SpecialProgrammes = ({
                             Publication status
                           </span>
 
-                          <StatusBadge status={programme.status} />
+                          <StatusBadge status={toReportStatus(programme.status)} />
                         </div>
 
                         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">

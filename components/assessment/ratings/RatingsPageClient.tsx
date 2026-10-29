@@ -360,7 +360,7 @@ export const RatingsPageClient = ({
     };
 
     publicReports.forEach((report) => {
-      if (report.reportType !== "SERVICE" || !report.serviceType) {
+      if (report.reportType !== "service" || !report.serviceType) {
         return;
       }
 

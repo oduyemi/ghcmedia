@@ -3,12 +3,11 @@ import mongoose from "mongoose";
 import { dbConnect } from "@/utils/db";
 import ServiceOccurrence from "@/models/serviceOccurence.model";
 import ChecklistTemplate, { type IChecklistTemplateItem } from "@/models/checklistTemplate.model";
-import ChecklistSubmission from "@/models/checklistSubmission.model";
+import ChecklistSubmission, { type IChecklistItemRecord } from "@/models/checklistSubmission.model";
 import Notification from "@/models/notification.model";
 import { authorize, getAdmins } from "@/utils/reporting";
 import { sendEmailWithRetry } from "@/helper/emailLogic";
-import User from "@/models/user.model";
-import SpecialProgramme from "@/models/specialProgramme.model";
+
 
 
 
@@ -18,7 +17,7 @@ export async function GET() {
       "member",
       "admin",
       "pastor",
-      "leader",
+      "other",
     ]);
 
     if (forbidden) return forbidden;
@@ -97,12 +96,13 @@ export async function GET() {
           .toLowerCase()
           .replace(/\b\w/g, (character) => character.toUpperCase());
 
-      const completedItems = submission.items.filter(
-        (item) => item.status === "COMPLETED",
+      const checklistItems: IChecklistItemRecord[] = submission.items;
+      const completedItems = checklistItems.filter(
+        (item: IChecklistItemRecord) => item.status === "COMPLETED",
       ).length;
-
-      const applicableItems = submission.items.filter(
-        (item) => item.status !== "NOT_APPLICABLE",
+      
+      const applicableItems = checklistItems.filter(
+        (item: IChecklistItemRecord) => item.status !== "NOT_APPLICABLE",
       ).length;
 
       const status = (() => {

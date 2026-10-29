@@ -60,6 +60,16 @@ function ProgrammeDetail(_a) {
             React.createElement("p", { className: "text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400" }, label),
             React.createElement("div", { className: "mt-1 break-words text-sm font-medium leading-6 text-[#253D56] [overflow-wrap:anywhere]" }, children))));
 }
+function toReportStatus(status) {
+    switch (status) {
+        case "pending_review":
+            return "pending-review";
+        case "draft":
+        case "approved":
+        case "published":
+            return status;
+    }
+}
 function ProgrammeSkeleton() {
     return (React.createElement("div", { "aria-hidden": "true", className: "flex h-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white sm:rounded-[1.75rem]" },
         React.createElement("div", { className: "h-44 shrink-0 animate-pulse bg-slate-200 sm:h-48" }),
@@ -191,7 +201,7 @@ exports.SpecialProgrammes = function (_a) {
                         showUnpublished && (React.createElement("div", { className: "mt-5 rounded-xl border border-slate-100 bg-slate-50/80 p-3.5 sm:rounded-2xl sm:p-4" },
                             React.createElement("div", { className: "flex flex-wrap items-center justify-between gap-2" },
                                 React.createElement("span", { className: "text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500" }, "Publication status"),
-                                React.createElement(StatusBadge_1.StatusBadge, { status: programme.status })),
+                                React.createElement(StatusBadge_1.StatusBadge, { status: toReportStatus(programme.status) })),
                             React.createElement("div", { className: "mt-3 flex flex-wrap items-center justify-between gap-2 text-xs" },
                                 React.createElement("span", { className: "text-slate-500" }, "Visibility"),
                                 React.createElement("span", { className: "font-semibold capitalize text-[#253D56]" }, programme.visibility)))),

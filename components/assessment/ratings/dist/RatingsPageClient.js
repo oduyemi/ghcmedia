@@ -312,7 +312,7 @@ exports.RatingsPageClient = function (_a) {
         };
         publicReports.forEach(function (report) {
             var _a;
-            if (report.reportType !== "SERVICE" || !report.serviceType) {
+            if (report.reportType !== "service" || !report.serviceType) {
                 return;
             }
             var serviceId = serviceTypeMap[report.serviceType];
