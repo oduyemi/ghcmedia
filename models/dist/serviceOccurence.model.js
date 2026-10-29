@@ -9,13 +9,64 @@ function isRealDateKey(value) {
     return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 var serviceOccurrenceSchema = new mongoose_1.Schema({
-    serviceType: { type: String, "enum": ["BUSINESS", "CELEBRATION", "MC_LIVE", "WOW", "SPECIAL_PROGRAMME"], required: true, index: true },
-    serviceDateKey: { type: String, required: true, validate: { validator: isRealDateKey, message: "serviceDateKey must be a real date in YYYY-MM-DD format." }, index: true },
-    startsAt: { type: Date, required: true }, endsAt: { type: Date, "default": null },
-    status: { type: String, "enum": ["SCHEDULED", "COMPLETED", "CANCELLED"], "default": "SCHEDULED", required: true, index: true },
-    specialProgrammeId: { type: mongoose_1.Schema.Types.ObjectId, ref: "SpecialProgramme", "default": null },
-    title: { type: String, trim: true, "default": null, maxlength: 200 }, notes: { type: String, trim: true, "default": null, maxlength: 3000 },
-    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true }
+    serviceType: {
+        type: String,
+        "enum": ["BUSINESS", "CELEBRATION", "MC_LIVE", "WOW", "SPECIAL_PROGRAMME"],
+        required: true,
+        index: true
+    },
+    serviceDateKey: {
+        type: String,
+        required: true,
+        validate: {
+            validator: isRealDateKey,
+            message: "serviceDateKey must be a real date in YYYY-MM-DD format."
+        },
+        index: true
+    },
+    startsAt: {
+        type: Date,
+        required: true
+    },
+    endsAt: {
+        type: Date,
+        "default": null
+    },
+    status: {
+        type: String,
+        "enum": ["SCHEDULED", "COMPLETED", "CANCELLED"],
+        "default": "SCHEDULED",
+        required: true,
+        index: true
+    },
+    specialProgrammeId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "SpecialProgramme",
+        "default": null
+    },
+    title: {
+        type: String,
+        trim: true,
+        "default": null,
+        maxlength: 200
+    },
+    notes: {
+        type: String,
+        trim: true,
+        "default": null,
+        maxlength: 3000
+    },
+    assignedReporterId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        "default": null,
+        index: true
+    },
+    createdBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    }
 }, { timestamps: true });
 serviceOccurrenceSchema.pre("validate", function () {
     if (this.endsAt && this.startsAt && this.endsAt < this.startsAt)

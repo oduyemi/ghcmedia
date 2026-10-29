@@ -39,7 +39,7 @@ var userSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        "enum": ["member", "admin"],
+        "enum": ["member", "admin", "pastor", "leader"],
         "default": "member",
         required: true
     },

@@ -2,7 +2,7 @@
 import { escapeHtml } from "@/utils/escapeHtml";
 import { sendEmailWithRetry } from "./emailLogic";
 
-type UserRole = "member" | "admin";
+type UserRole = "member" | "admin" | "pastor" | "other";
 
 const PORTAL_URL = (
   process.env.APP_URL || "https://ghcmedia.vercel.app"
@@ -21,8 +21,14 @@ export const sendOnboardingMail = async (
   const setupLink = escapeHtml(`${SETUP_URL}?token=${safeToken}`);
   const safePortalUrl = escapeHtml(PORTAL_URL);
 
-  const roleLabel =
-    role === "admin" ? "Administrator" : "Member";
+  const roleLabels: Record<UserRole, string> = {
+    member: "Media Team Member",
+    admin: "Administrator",
+    pastor: "Pastor",
+    other: "Authorized Visitor",
+  };
+  
+  const roleLabel = roleLabels[role];
 
   const htmlContent = `
     <!DOCTYPE html>

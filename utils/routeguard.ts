@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyToken, clearAuthCookie } from "@/utils/auth";
 
-export type ProtectedRole = "member" | "admin";
+export type ProtectedRole = "member" | "admin" | "pastor" | "leader";
 
 export async function protectRoute(
   request: NextRequest,
@@ -33,7 +33,9 @@ export async function protectRoute(
     );
   }
 
-  if (!allowedRoles.includes(payload.role)) {
+  if (payload.role === "other" ||
+    !allowedRoles.includes(payload.role as ProtectedRole)
+  ) {
     const destination =
       payload.role === "admin" ? "/admin" : "/portal";
 

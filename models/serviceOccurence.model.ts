@@ -1,10 +1,19 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
+
 export type OccurrenceServiceType = "BUSINESS" | "CELEBRATION" | "MC_LIVE" | "WOW" | "SPECIAL_PROGRAMME";
 export type OccurrenceStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
+
 export interface IServiceOccurrence extends Document {
-  _id: Types.ObjectId; serviceType: OccurrenceServiceType; serviceDateKey: string; startsAt: Date; endsAt?: Date | null;
-  status: OccurrenceStatus; specialProgrammeId?: Types.ObjectId | null; title?: string | null; notes?: string | null;
+  _id: Types.ObjectId; 
+  serviceType: OccurrenceServiceType; 
+  serviceDateKey: string; 
+  startsAt: Date; 
+  endsAt?: Date | null;
+  status: OccurrenceStatus; 
+  specialProgrammeId?: Types.ObjectId | null; 
+  title?: string | null; notes?: string | null;
+  assignedReporterId?: Types.ObjectId | null;
   createdBy: Types.ObjectId; createdAt: Date; updatedAt: Date;
 }
 
@@ -16,14 +25,66 @@ function isRealDateKey(value: string): boolean {
 }
 
 const serviceOccurrenceSchema = new Schema<IServiceOccurrence>({
-  serviceType: { type: String, enum: ["BUSINESS", "CELEBRATION", "MC_LIVE", "WOW", "SPECIAL_PROGRAMME"], required: true, index: true },
-  serviceDateKey: { type: String, required: true, validate: { validator: isRealDateKey, message: "serviceDateKey must be a real date in YYYY-MM-DD format." }, index: true },
-  startsAt: { type: Date, required: true }, endsAt: { type: Date, default: null },
-  status: { type: String, enum: ["SCHEDULED", "COMPLETED", "CANCELLED"], default: "SCHEDULED", required: true, index: true },
-  specialProgrammeId: { type: Schema.Types.ObjectId, ref: "SpecialProgramme", default: null },
-  title: { type: String, trim: true, default: null, maxlength: 200 }, notes: { type: String, trim: true, default: null, maxlength: 3000 },
-  createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-}, { timestamps: true });
+  serviceType: { 
+    type: String, 
+    enum: ["BUSINESS", "CELEBRATION", "MC_LIVE", "WOW", "SPECIAL_PROGRAMME"], 
+    required: true, 
+    index: true 
+  },
+  serviceDateKey: { 
+    type: String, 
+    required: true, 
+    validate: { 
+      validator: isRealDateKey, 
+      message: "serviceDateKey must be a real date in YYYY-MM-DD format." 
+    }, 
+      index: true 
+  },
+  startsAt: { 
+    type: Date, 
+    required: true 
+  }, 
+  endsAt: { 
+    type: Date, 
+    default: null 
+  },
+  status: { 
+    type: String, 
+    enum: ["SCHEDULED", "COMPLETED", "CANCELLED"], 
+    default: "SCHEDULED", 
+    required: true, 
+    index: true 
+  },
+  specialProgrammeId: { 
+    type: Schema.Types.ObjectId, 
+    ref: "SpecialProgramme", 
+    default: null 
+  },
+  title: { 
+    type: String, 
+    trim: true, 
+    default: null, 
+    maxlength: 200 
+  }, 
+  notes: { 
+    type: String, 
+    trim: true, 
+    default: null, 
+    maxlength: 3000 
+  },
+  assignedReporterId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+    index: true,
+  },
+  createdBy: { 
+    type: Schema.Types.ObjectId, 
+    ref: "User", 
+    required: true 
+  },
+}, 
+{ timestamps: true });
 
 serviceOccurrenceSchema.pre("validate", function () {
   if (this.endsAt && this.startsAt && this.endsAt < this.startsAt) this.invalidate("endsAt", "Occurrence end time cannot precede its start time.");

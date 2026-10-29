@@ -2,24 +2,101 @@
 exports.__esModule = true;
 var mongoose_1 = require("mongoose");
 var checklistItemRecordSchema = new mongoose_1.Schema({
-    itemId: { type: String, required: true, trim: true }, title: { type: String, required: true, trim: true, maxlength: 200 },
-    requirement: { type: String, trim: true, "default": "", maxlength: 2000 }, required: { type: Boolean, "default": true, required: true },
-    status: { type: String, "enum": ["COMPLETED", "NOT_COMPLETED", "NOT_APPLICABLE", "PENDING_REVIEW"], required: true, "default": "PENDING_REVIEW" },
-    notes: { type: String, trim: true, "default": "", maxlength: 2000 }
+    itemId: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 200
+    },
+    requirement: {
+        type: String,
+        trim: true,
+        "default": "",
+        maxlength: 2000
+    },
+    required: {
+        type: Boolean,
+        "default": true,
+        required: true
+    },
+    status: {
+        type: String,
+        "enum": ["COMPLETED", "NOT_COMPLETED", "NOT_APPLICABLE", "PENDING_REVIEW"],
+        required: true,
+        "default": "PENDING_REVIEW"
+    },
+    notes: {
+        type: String,
+        trim: true,
+        "default": "",
+        maxlength: 2000
+    }
 }, { _id: false });
 var checklistSubmissionSchema = new mongoose_1.Schema({
-    serviceOccurrenceId: { type: mongoose_1.Schema.Types.ObjectId, ref: "ServiceOccurrence", required: true, index: true },
-    templateId: { type: mongoose_1.Schema.Types.ObjectId, ref: "ChecklistTemplate", required: true },
-    templateVersion: { type: Number, required: true, min: 1, validate: Number.isInteger },
-    submittedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    items: {
-        type: [checklistItemRecordSchema], "default": [],
-        validate: [function (items) { return items.length > 0; }, "A submission must contain checklist items."]
+    serviceOccurrenceId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "ServiceOccurrence",
+        required: true,
+        index: true
     },
-    submissionStatus: { type: String, "enum": ["SUBMITTED", "PENDING_REVIEW", "APPROVED"], "default": "SUBMITTED", required: true, index: true },
-    submittedAt: { type: Date, "default": null }, reviewedAt: { type: Date, "default": null },
-    reviewedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", "default": null },
-    observations: { type: String, trim: true, "default": "", maxlength: 5000 }
+    templateId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "ChecklistTemplate",
+        required: true
+    },
+    templateVersion: {
+        type: Number,
+        required: true,
+        min: 1,
+        validate: Number.isInteger
+    },
+    submittedBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+        index: true
+    },
+    items: {
+        type: [checklistItemRecordSchema],
+        "default": [],
+        validate: [
+            function (items) {
+                return items.length > 0;
+            },
+            "A submission must contain checklist items."
+        ]
+    },
+    submissionStatus: {
+        type: String,
+        "enum": ["SUBMITTED", "PENDING_REVIEW", "APPROVED", "REJECTED"],
+        "default": "SUBMITTED",
+        required: true,
+        index: true
+    },
+    submittedAt: {
+        type: Date,
+        "default": null
+    },
+    reviewedAt: {
+        type: Date,
+        "default": null
+    },
+    reviewedBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        "default": null
+    },
+    observations: {
+        type: String,
+        trim: true,
+        "default": "",
+        maxlength: 5000
+    }
 }, { timestamps: true });
 checklistSubmissionSchema.pre("validate", function () {
     var ids = this.items.map(function (item) { return item.itemId.trim(); });

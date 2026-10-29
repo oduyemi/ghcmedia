@@ -1,16 +1,31 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
-
 import { dbConnect } from "@/utils/db";
 import User from "@/models/user.model";
 import { getCurrentUser } from "@/utils/auth";
 import { sendOnboardingMail } from "@/helper/sendOnboardingMail";
 
-type Role = "member" | "admin";
+
+
+type Role = "member" | "admin" | "pastor" | "other";
+
+
+const VALID_ROLES: readonly Role[] = [
+  "member",
+  "admin",
+  "pastor",
+  "other",
+];
 
 const SETUP_TOKEN_TTL_MS = 30 * 60 * 1000;
+const BCRYPT_ROUNDS = 12;
+const ROLE_LABELS: Record<Role, string> = {
+  member: "Member",
+  admin: "Administrator",
+  pastor: "Pastor",
+  other: "Other",
+};
 
 function hashSetupToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -25,22 +40,31 @@ function isDuplicateKeyError(error: unknown): boolean {
   );
 }
 
+function isValidRole(value: unknown): value is Role {
+  return (
+    typeof value === "string" &&
+    VALID_ROLES.includes(value as Role)
+  );
+}
+
+function isValidEmail(email: string): boolean {
+  return /^\S+@\S+\.\S+$/.test(email);
+}
+
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
-
-    // Authenticate and authorize before processing account creation.
     const currentUser = await getCurrentUser();
-
     if (!currentUser || currentUser.role !== "admin") {
       return NextResponse.json(
-        { error: "Forbidden. Only administrators can create accounts." },
+        {
+          error: "Forbidden. Only administrators can create accounts.",
+        },
         { status: 403 }
       );
     }
 
     let body: unknown;
-
     try {
       body = await req.json();
     } catch {
@@ -50,7 +74,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    if (
+      !body ||
+      typeof body !== "object" ||
+      Array.isArray(body)
+    ) {
       return NextResponse.json(
         { error: "Invalid request body." },
         { status: 400 }
@@ -71,7 +99,6 @@ export async function POST(req: NextRequest) {
       phone?: unknown;
     };
 
-    // Validate required fields, including phone.
     if (
       typeof fname !== "string" ||
       typeof lname !== "string" ||
@@ -84,7 +111,8 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         {
-          error: "First name, last name, email and phone are required.",
+          error:
+            "First name, last name, email and phone are required.",
         },
         { status: 400 }
       );
@@ -94,7 +122,6 @@ export async function POST(req: NextRequest) {
     const lastName = lname.trim();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPhone = phone.trim();
-
     if (
       firstName.length > 80 ||
       lastName.length > 80 ||
@@ -102,28 +129,34 @@ export async function POST(req: NextRequest) {
       normalizedPhone.length > 80
     ) {
       return NextResponse.json(
-        { error: "One or more fields exceed the allowed length." },
+        {
+          error: "One or more fields exceed the allowed length.",
+        },
         { status: 400 }
       );
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+    if (!isValidEmail(normalizedEmail)) {
       return NextResponse.json(
         { error: "Please provide a valid email address." },
         { status: 400 }
       );
     }
 
-    const requestedRole: Role =
-      role === undefined ? "member" : (role as Role);
+    // Default to member when role is omitted.
+    let requestedRole: Role = "member";
+    if (role !== undefined) {
+      if (!isValidRole(role)) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid role. Role must be member, admin, pastor, or other.",
+          },
+          { status: 400 }
+        );
+      }
 
-    if (requestedRole !== "member" && requestedRole !== "admin") {
-      return NextResponse.json(
-        {
-          error: "Invalid role. Role must be either member or admin.",
-        },
-        { status: 400 }
-      );
+      requestedRole = role;
     }
 
     const existingUser = await User.findOne({
@@ -132,25 +165,29 @@ export async function POST(req: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "An account with this email already exists." },
+        {
+          error: "An account with this email already exists.",
+        },
         { status: 409 }
       );
     }
 
     // Generate a cryptographically secure, single-use setup token.
-    // Store only its hash; send the raw token only in the email.
+    // Only its SHA-256 hash is stored in the database.
     const setupToken = randomBytes(48).toString("hex");
     const setupTokenHash = hashSetupToken(setupToken);
+
     const setupTokenExpiresAt = new Date(
       Date.now() + SETUP_TOKEN_TTL_MS
     );
 
-    // The account cannot be accessed with this random initial password.
-    // The recipient must set their own password using the invitation.
+    // Generate an initial password the recipient does not know.
+    // The recipient must set their own password through onboarding.
     const unusableInitialPassword = randomBytes(48).toString("hex");
+
     const hashedInitialPassword = await bcrypt.hash(
       unusableInitialPassword,
-      12
+      BCRYPT_ROUNDS
     );
 
     let newUser;
@@ -169,10 +206,13 @@ export async function POST(req: NextRequest) {
         sessionVersion: 0,
       });
     } catch (error: unknown) {
-      // The unique email index protects against concurrent requests.
+      // The unique database index handles concurrent registrations
+      // attempting to create accounts with the same email.
       if (isDuplicateKeyError(error)) {
         return NextResponse.json(
-          { error: "An account with this email already exists." },
+          {
+            error: "An account with this email already exists.",
+          },
           { status: 409 }
         );
       }
@@ -180,6 +220,7 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
+    // Send the onboarding invitation.
     try {
       await sendOnboardingMail(
         newUser.email,
@@ -187,8 +228,8 @@ export async function POST(req: NextRequest) {
         newUser.role,
         newUser.fname
       );
-    } catch (emailError) {
-      // Never log or return the raw setup token.
+    } catch (emailError: unknown) {
+      // Do not log or return the raw setup token.
       console.error("ONBOARDING EMAIL ERROR:", emailError);
 
       return NextResponse.json(
@@ -212,9 +253,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: `${
-          requestedRole === "admin" ? "Administrator" : "Member"
-        } account created successfully. An invitation email has been sent.`,
+        message: `${ROLE_LABELS[requestedRole]} account created successfully. An invitation email has been sent.`,
         emailSent: true,
         user: {
           _id: newUser._id.toString(),

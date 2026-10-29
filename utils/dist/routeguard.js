@@ -61,7 +61,8 @@ function protectRoute(request, allowedRoles) {
                     if (payload.firstLogin) {
                         return [2 /*return*/, server_1.NextResponse.redirect(new URL("/setup-password", request.url))];
                     }
-                    if (!allowedRoles.includes(payload.role)) {
+                    if (payload.role === "other" ||
+                        !allowedRoles.includes(payload.role)) {
                         destination = payload.role === "admin" ? "/admin" : "/portal";
                         return [2 /*return*/, server_1.NextResponse.redirect(new URL(destination, request.url))];
                     }

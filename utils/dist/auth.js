@@ -73,7 +73,7 @@ exports.createAuthToken = createAuthToken;
 function verifyToken(token) {
     var _a;
     return __awaiter(this, void 0, Promise, function () {
-        var payload, sessionVersion, _b;
+        var payload, allowedRoles, sessionVersion, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -83,9 +83,16 @@ function verifyToken(token) {
                         })];
                 case 1:
                     payload = (_c.sent()).payload;
+                    allowedRoles = [
+                        "member",
+                        "admin",
+                        "pastor",
+                        "other",
+                    ];
                     if (typeof payload.userId !== "string" ||
                         payload.sub !== payload.userId ||
-                        !["member", "admin"].includes(payload.role)) {
+                        typeof payload.role !== "string" ||
+                        !allowedRoles.includes(payload.role)) {
                         return [2 /*return*/, null];
                     }
                     sessionVersion = (_a = payload.sessionVersion) !== null && _a !== void 0 ? _a : 0;

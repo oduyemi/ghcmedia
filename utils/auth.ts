@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import User from "@/models/user.model";
 
 
-export type Role = "member" | "admin";
+export type Role = "member" | "admin" | "pastor" | "other";
 
 export interface AuthTokenPayload {
   userId: string;
@@ -56,16 +56,23 @@ export async function verifyToken(
       algorithms: [JWT_ALGORITHM],
     });
 
+    const allowedRoles: Role[] = [
+      "member",
+      "admin",
+      "pastor",
+      "other",
+    ];
+    
     if (
       typeof payload.userId !== "string" ||
       payload.sub !== payload.userId ||
-      !["member", "admin"].includes(payload.role as string)
+      typeof payload.role !== "string" ||
+      !allowedRoles.includes(payload.role as Role)
     ) {
       return null;
     }
 
     const sessionVersion = payload.sessionVersion ?? 0;
-
     if (
       typeof sessionVersion !== "number" ||
       !Number.isInteger(sessionVersion) ||
